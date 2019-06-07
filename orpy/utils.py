@@ -27,3 +27,29 @@ def env(*vars, **kwargs):
         if value:
             return value
     return kwargs.get('default', '')
+
+
+def get_item_properties(item, fields, mixed_case_fields=None):
+    """Return a tuple containing the item properties.
+    :param item: a single item resource (e.g. Server, Project, etc)
+    :param fields: tuple of strings with the desired field names
+    :param mixed_case_fields: tuple of field names to preserve case
+    """
+    if mixed_case_fields is None:
+        mixed_case_fields = []
+
+    row = []
+
+    for field in fields:
+        if field in mixed_case_fields:
+            field_name = field.replace(' ', '')
+        else:
+            field_name = field.lower().replace(' ', '')
+
+        # FIXME(aloga): we need to move to objects, therefore
+        # we need to adapt this asap
+#        data = getattr(item, field_name, '')
+        data = item.get(field_name, '')
+
+        row.append(data)
+    return tuple(row)

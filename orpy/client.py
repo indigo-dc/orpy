@@ -26,6 +26,8 @@ class OrpyClient(object):
         self.url = url
         self.token = token
 
+        self.deployments = Deployments(self)
+
     def request(self, url, method, data=None):
         headers = {
             "User-Agent": "orpy-%s" % version.__version__,
@@ -64,3 +66,12 @@ class OrpyClient(object):
             return body
         else:
             raise exceptions.InvalidUrl(url=resp.url)
+
+
+class Deployments(object):
+    def __init__(self, client):
+        self.client = client
+
+    def index(self):
+        resp, body = self.client.request("./deployments", "get")
+        return body["content"]
