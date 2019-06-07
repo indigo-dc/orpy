@@ -49,9 +49,7 @@ class InvalidUrl(ClientException):
 
 
 class RetryAfterException(ClientException):
-    """
-    The base exception class for ClientExceptions that use Retry-After header.
-    """
+    """Base class for ClientExceptions that use Retry-After header."""
     def __init__(self, *args, **kwargs):
         try:
             self.retry_after = int(kwargs.pop('retry_after'))
@@ -62,73 +60,69 @@ class RetryAfterException(ClientException):
 
 
 class BadRequest(ClientException):
-    """
-    HTTP 400 - Bad request: you sent some malformed data.
+    """HTTP 400 - Bad request.
+
+    You sent some malformed data.
     """
     http_status = 400
     message = "Bad request"
 
 
 class Unauthorized(ClientException):
-    """
-    HTTP 401 - Unauthorized: bad credentials.
+    """HTTP 401 - Unauthorized.
+
+    Bad credentials.
     """
     http_status = 401
     message = "Unauthorized"
 
 
 class Forbidden(ClientException):
-    """
-    HTTP 403 - Forbidden: your credentials don't give you access to this
-    resource.
+    """HTTP 403 - Forbidden.
+
+    Your credentials don't give you access to this resource.
     """
     http_status = 403
     message = "Forbidden"
 
 
 class NotFound(ClientException):
-    """
-    HTTP 404 - Not found
-    """
+    """HTTP 404 - Not found."""
     http_status = 404
     message = "Not found"
 
 
 class MethodNotAllowed(ClientException):
-    """
-    HTTP 405 - Method Not Allowed
-    """
+    """HTTP 405 - Method Not Allowed."""
     http_status = 405
     message = "Method Not Allowed"
 
 
 class NotAcceptable(ClientException):
-    """
-    HTTP 406 - Not Acceptable
-    """
+    """HTTP 406 - Not Acceptable."""
     http_status = 406
     message = "Not Acceptable"
 
 
 class Conflict(ClientException):
-    """
-    HTTP 409 - Conflict
-    """
+    """HTTP 409 - Conflict."""
     http_status = 409
     message = "Conflict"
 
 
 class OverLimit(RetryAfterException):
-    """
-    HTTP 413 - Over limit: you're over the API limits for this time period.
+    """HTTP 413 - Over limit.
+
+    You're over the API limits for this time period.
     """
     http_status = 413
     message = "Over limit"
 
 
 class RateLimit(RetryAfterException):
-    """
-    HTTP 429 - Rate limit: you've sent too many requests for this time period.
+    """HTTP 429 - Rate limit
+
+    You've sent too many requests for this time period.
     """
     http_status = 429
     message = "Rate limit"
@@ -136,8 +130,9 @@ class RateLimit(RetryAfterException):
 
 # NotImplemented is a python keyword.
 class HTTPNotImplemented(ClientException):
-    """
-    HTTP 501 - Not Implemented: the server does not support this operation.
+    """HTTP 501 - Not Implemented.
+
+    The server does not support this operation.
     """
     http_status = 501
     message = "Not Implemented"
@@ -156,9 +151,7 @@ _code_map = dict((c.http_status, c) for c in _error_classes)
 
 
 def from_response(response, body, url, method=None):
-    """
-    Return an instance of an ClientException or subclass
-    based on a requests response.
+    """Return an instance of ClientException or subclass based on a response.
 
     Usage::
 

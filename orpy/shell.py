@@ -19,8 +19,8 @@ import sys
 
 from cliff import app
 from cliff import command
-from cliff import complete
 from cliff import commandmanager
+from cliff import complete
 from cliff import help
 
 from orpy import client

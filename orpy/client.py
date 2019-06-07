@@ -157,7 +157,7 @@ class OrpyClient(object):
             elif target[key] is not None:
                 # because in python3 byte string handling is ... ug
                 value = target[key].encode('utf-8')
-                sha1sum = hashlib.sha1(value)
+                sha1sum = hashlib.sha1(value)  # nosec
                 target[key] = "{SHA1}%s" % sha1sum.hexdigest()
 
     def _get(self, url):

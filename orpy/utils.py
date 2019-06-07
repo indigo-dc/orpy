@@ -19,6 +19,7 @@ import os
 
 def env(*vars, **kwargs):
     """Search for the first defined of possibly many env vars
+
     Returns the first environment variable defined in vars, or
     returns the default defined in kwargs.
     """
@@ -31,6 +32,7 @@ def env(*vars, **kwargs):
 
 def get_item_properties(item, fields, mixed_case_fields=None):
     """Return a tuple containing the item properties.
+
     :param item: a single item resource (e.g. Server, Project, etc)
     :param fields: tuple of strings with the desired field names
     :param mixed_case_fields: tuple of field names to preserve case
