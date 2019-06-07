@@ -8,12 +8,9 @@ Python library and CLI for the INDIGO PaaS Orchestrator.
 
 ## Installation.
 
-It is better to use a virtualenv
+You can install it directly from PyPI
 
 ```
-git clone https://github.com/indigo-dc/orpy
-virtualenv venv
-source venv/bin/activate
 pip install orpy
 ```
 
