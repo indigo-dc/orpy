@@ -58,7 +58,8 @@ class OrpyApp(app.App):
         self.token = utils.env("ORCHESTRATOR_TOKEN")
         if self.client is None:
             self.client = client.OrpyClient(self.options.orchestrator_url,
-                                            self.token)
+                                            self.token,
+                                            debug=self.options.debug)
 
     def prepare_to_run_command(self, cmd):
         if cmd.auth_required and not self.token:
