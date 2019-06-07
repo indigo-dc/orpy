@@ -16,6 +16,7 @@
 
 
 from cliff import lister
+from cliff import show
 
 from orpy import utils
 
@@ -42,3 +43,18 @@ class DeploymentList(lister.Lister):
                   for s in ret]
 
         return columns, values
+
+
+class DeploymentShow(show.ShowOne):
+    """Show details about an existing deployment."""
+
+    def get_parser(self, prog_name):
+        parser = super(DeploymentShow, self).get_parser(prog_name)
+        parser.add_argument('uuid',
+                            metavar="<deployment uuid>",
+                            help="Deployment UUID to show.")
+        return parser
+
+    def take_action(self, parsed_args):
+        d = self.app.client.deployments.show(parsed_args.uuid)
+        return self.dict2columns(d)

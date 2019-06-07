@@ -75,3 +75,8 @@ class Deployments(object):
     def index(self):
         resp, body = self.client.request("./deployments", "get")
         return body["content"]
+
+    def show(self, uuid):
+        resp, body = self.client.request("./deployments/%s" % uuid,
+                                         "get")
+        return body
