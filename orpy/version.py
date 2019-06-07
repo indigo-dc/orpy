@@ -21,3 +21,5 @@ try:
     __version__ = version_info.version_string()
 except AttributeError:
     __version__ = None
+
+user_agent = "orpy/%s" % __version__

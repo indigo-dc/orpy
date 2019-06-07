@@ -53,7 +53,7 @@ class OrpyClient(object):
     def request(self, url, method, **kwargs):
         kwargs.setdefault('headers', kwargs.get('headers', {}))
 
-        kwargs["headers"]["User-Agent"] = "orpy-%s" % version.__version__
+        kwargs["headers"]["User-Agent"] = "orpy-%s" % version.user_agent
         kwargs["headers"]["Accept"] = "application/json"
 
         if self.token is not None:
