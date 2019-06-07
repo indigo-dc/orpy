@@ -46,7 +46,7 @@ class OrpyClient(object):
 
         try:
             body = resp.json()
-        except:
+        except Exception:
             body = None
 
         if resp.status_code >= 400:
@@ -61,11 +61,15 @@ class OrpyClient(object):
         return self.request(url, "post", data)
 
     def info(self):
-        resp, body = self._get("./info")
+        try:
+            resp, body = self._get("./info")
+        except exceptions.ClientException:
+            raise exceptions.InvalidUrl(url=self.url)
+
         if resp.status_code == 200:
             return body
         else:
-            raise exceptions.InvalidUrl(url=resp.url)
+            raise exceptions.InvalidUrl(url=self.url)
 
 
 class Deployments(object):
