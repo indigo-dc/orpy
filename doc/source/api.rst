@@ -9,7 +9,7 @@ Orpy API bindings
    :caption: Contents:
 
 Orpy Client
-===========
+-----------
 
 Use this to interact with the INDIGO-DatatCloud orchestrator.
 

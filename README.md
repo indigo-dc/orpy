@@ -4,6 +4,7 @@ Python library and CLI for the INDIGO PaaS Orchestrator.
 
 * Free software: Apache License 2.0
 * Source: https://github.com/indigo-dc/orpy
+* Documentation: https://orpy.readthedocs.io/
 * Bugs: https://github.com/indigo-dc/orpy/issues
 
 ## Installation.
