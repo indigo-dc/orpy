@@ -73,7 +73,7 @@ class OrpyClient(object):
         try:
             body = resp.json()
         except Exception:
-            body = None
+            body = resp.text
 
         if resp.status_code >= 400:
             raise exceptions.from_response(resp, body, url, method)
@@ -188,5 +188,10 @@ class Deployments(object):
 
     def show(self, uuid):
         resp, body = self.client.request("./deployments/%s" % uuid,
+                                         "get")
+        return body
+
+    def get_template(self, uuid):
+        resp, body = self.client.request("./deployments/%s/template/" % uuid,
                                          "get")
         return body

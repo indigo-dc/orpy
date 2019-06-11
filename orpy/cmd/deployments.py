@@ -58,3 +58,22 @@ class DeploymentShow(show.ShowOne):
     def take_action(self, parsed_args):
         d = self.app.client.deployments.show(parsed_args.uuid)
         return self.dict2columns(d)
+
+
+class DeploymentGetTemplate(show.ShowOne):
+    """Get template used for a given deployment."""
+
+    def get_parser(self, prog_name):
+        parser = super(DeploymentGetTemplate, self).get_parser(prog_name)
+        parser.add_argument('uuid',
+                            metavar="<deployment uuid>",
+                            help="Deployment UUID to get template for.")
+        return parser
+
+    def take_action(self, parsed_args):
+        d = {}
+        d["deployment uuid"] = parsed_args.uuid
+        d["template"] = self.app.client.deployments.get_template(
+            parsed_args.uuid
+        )
+        return self.dict2columns(d)
