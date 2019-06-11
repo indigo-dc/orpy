@@ -16,6 +16,7 @@
 
 import argparse
 
+from cliff import command
 from cliff import lister
 from cliff import show
 
@@ -80,6 +81,20 @@ class DeploymentShow(show.ShowOne):
     def take_action(self, parsed_args):
         d = self.app.client.deployments.show(parsed_args.uuid)
         return self.dict2columns(d)
+
+
+class DeploymentDelete(command.Command):
+    """Show details about an existing deployment."""
+
+    def get_parser(self, prog_name):
+        parser = super(DeploymentDelete, self).get_parser(prog_name)
+        parser.add_argument('uuid',
+                            metavar="<deployment uuid>",
+                            help="Deployment UUID to delete.")
+        return parser
+
+    def take_action(self, parsed_args):
+        self.app.client.deployments.delete(parsed_args.uuid)
 
 
 class DeploymentGetTemplate(show.ShowOne):

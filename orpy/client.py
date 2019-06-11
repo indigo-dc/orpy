@@ -272,6 +272,10 @@ class Deployments(object):
         resp, body = self.client.get("./deployments/%s" % uuid)
         return body
 
+    def delete(self, uuid):
+        resp, body = self.client.delete("./deployments/%s" % uuid)
+        return body
+
     def get_template(self, uuid):
         resp, body = self.client.get("./deployments/%s/template/" % uuid)
         return body
