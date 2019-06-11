@@ -15,15 +15,29 @@
 # under the License.
 
 import copy
+import datetime
 import hashlib
 import json
 import logging
+import uuid
 
 import requests
+import six
 from six.moves.urllib import parse
 
 from orpy import exceptions
 from orpy import version
+
+
+class _JSONEncoder(json.JSONEncoder):
+
+    def default(self, o):
+        if isinstance(o, datetime.datetime):
+            return o.isoformat()
+        if isinstance(o, uuid.UUID):
+            return six.text_type(o)
+
+        return super(_JSONEncoder, self).default(o)
 
 
 class OrpyClient(object):
@@ -50,7 +64,37 @@ class OrpyClient(object):
                 # otherwise we will get all the requests logging messages
                 rql.setLevel(logging.WARNING)
 
-    def request(self, url, method, **kwargs):
+        self._json = _JSONEncoder()
+
+    def request(self, url, method, json=None, **kwargs):
+        """Send an HTTP request with the specified characteristics.
+
+        Wrapper around `requests.Session.request` to handle tasks such as
+        setting headers, JSON encoding/decoding, and error handling.
+
+        Arguments that are not handled are passed through to the requests
+        library.
+
+        :param str url: Path or fully qualified URL of the HTTP request. If
+                        only a path is provided then the URL will be prefixed
+                        with the attribute self.url. If a fully qualified URL
+                        is provided then self.url will be ignored.
+        :param str method: The http method to use. (e.g. 'GET', 'POST')
+        :param json: Some data to be represented as JSON. (optional)
+        :param kwargs: any other parameter that can be passed to
+                       :meth:`requests.Session.request` (such as `headers`).
+                       Except:
+
+                       - `data` will be overwritten by the data in the `json`
+                         param.
+                       - `allow_redirects` is ignored as redirects are handled
+                         by the session.
+
+        :returns: The response to the request.
+        """
+
+        method = method.lower()
+
         kwargs.setdefault('headers', kwargs.get('headers', {}))
 
         kwargs["headers"]["User-Agent"] = "orpy-%s" % version.user_agent
@@ -58,6 +102,10 @@ class OrpyClient(object):
 
         if self.token is not None:
             kwargs["headers"]["Authorization"] = "Bearer" + self.token
+
+        if json is not None:
+            kwargs["headers"].setdefault('Content-Type', 'application/json')
+            kwargs['data'] = self._json.encode(json)
 
         url = parse.urljoin(self.url, url)
 
