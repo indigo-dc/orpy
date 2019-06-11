@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Initial version of the orchestrator API bindings and CLI with full
+    functionality. Implements the complete orchestrator REST API.
+security:
+  - |
+    Authentication only possible through the usage of an OpenID Connect
+    access token.
