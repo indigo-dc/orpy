@@ -14,6 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from orpy.client import base
+
 
 class Deployments(object):
     """Manage Orchestrator deployments."""
@@ -23,16 +25,16 @@ class Deployments(object):
 
     def list(self):
         """List existing deployments."""
-        resp, body = self.client.get("./deployments")
-        return body["content"]
+        resp, results = self.client.get("./deployments")
+        return [base.Deployment(data) for data in results]
 
     def show(self, uuid):
         """Show details about a deployment.
 
         :param str uuid: The UUID of the deployment to show.
         """
-        resp, body = self.client.get("./deployments/%s" % uuid)
-        return body
+        resp, result = self.client.get("./deployments/%s" % uuid)
+        return base.Deployment(result)
 
     def delete(self, uuid):
         """Delete a deployment.
@@ -40,15 +42,17 @@ class Deployments(object):
         :param str uuid: The UUID of the deployment to delete.
         """
         resp, body = self.client.delete("./deployments/%s" % uuid)
-        return body
+        return
 
     def get_template(self, uuid):
         """Get the TOSCA template of a deployment.
 
         :param str uuid: The UUID of the deployment.
         """
-        resp, body = self.client.get("./deployments/%s/template/" % uuid)
-        return body
+        resp, result = self.client.get("./deployments/%s/template/" % uuid)
+        info = {"template": result,
+                "uuid": uuid}
+        return base.TOSCATemplate(info)
 
     def create(self, template, callback_url=None, max_providers_retry=None,
                keep_last_attemp=True, parameters={}):
@@ -70,9 +74,9 @@ class Deployments(object):
         if max_providers_retry:
             json["maxProvidersRetry"] = max_providers_retry
 
-        resp, body = self.client.post("./deployments/",
-                                      json=json)
-        return body
+        resp, result = self.client.post("./deployments/",
+                                        json=json)
+        return base.Deployment(result)
 
     def update(self, uuid, template, callback_url=None,
                max_providers_retry=None, keep_last_attemp=True,
@@ -96,6 +100,6 @@ class Deployments(object):
         if max_providers_retry:
             json["maxProvidersRetry"] = max_providers_retry
 
-        resp, body = self.client.put("./deployments/%s" % uuid,
-                                     json=json)
-        return body
+        resp, result = self.client.put("./deployments/%s" % uuid,
+                                       json=json)
+        return base.Deployment(result)

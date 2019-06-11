@@ -66,4 +66,4 @@ class ResourcesShow(show.ShowOne):
     def take_action(self, parsed_args):
         d = self.app.client.resources.show(parsed_args.deployment_uuid,
                                            parsed_args.resource_uuid)
-        return self.dict2columns(d)
+        return self.dict2columns(d.to_dict())

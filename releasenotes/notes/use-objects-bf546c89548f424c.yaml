@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    This version of orpy stops using bare dictionaries, and relies on objects 
+    for each of the REST resources.

@@ -14,6 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from orpy.client import base
+
 
 class Resources(object):
     """Manage Orchestrator deployment resources."""
@@ -26,8 +28,8 @@ class Resources(object):
 
         :param str uuid: The UUID of the deployment get the resources.
         """
-        resp, body = self.client.get("./deployments/%s/resources/" % uuid)
-        return body["content"]
+        resp, results = self.client.get("./deployments/%s/resources/" % uuid)
+        return [base.Resource(result) for result in results]
 
     def show(self, deployment_uuid, resource_uuid):
         """Show details about a resource on a deployment.
@@ -35,6 +37,6 @@ class Resources(object):
         :param str resource_uuid: The UUID of the deployment get the resource.
         :param str deployment_uuid: The UUID of the resource.
         """
-        resp, body = self.client.get("./deployments/%s/resources/%s" %
-                                     (deployment_uuid, resource_uuid))
-        return body
+        resp, result = self.client.get("./deployments/%s/resources/%s" %
+                                       (deployment_uuid, resource_uuid))
+        return base.Resource(result)

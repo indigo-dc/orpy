@@ -80,7 +80,7 @@ class DeploymentShow(show.ShowOne):
 
     def take_action(self, parsed_args):
         d = self.app.client.deployments.show(parsed_args.uuid)
-        return self.dict2columns(d)
+        return self.dict2columns(d.to_dict())
 
 
 class DeploymentDelete(command.Command):
@@ -108,12 +108,8 @@ class DeploymentGetTemplate(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        d = {}
-        d["deployment uuid"] = parsed_args.uuid
-        d["template"] = self.app.client.deployments.get_template(
-            parsed_args.uuid
-        )
-        return self.dict2columns(d)
+        d = self.app.client.deployments.get_template(parsed_args.uuid)
+        return self.dict2columns(d.to_dict())
 
 
 class DeploymentCreate(show.ShowOne):
@@ -164,7 +160,7 @@ class DeploymentCreate(show.ShowOne):
                 keep_last_attemp=parsed_args.keep_last,
                 parameters=parsed_args.parameters
             )
-        return self.dict2columns(d)
+        return self.dict2columns(d.to_dict())
 
 
 class DeploymentUpdate(show.ShowOne):
@@ -217,4 +213,4 @@ class DeploymentUpdate(show.ShowOne):
                 keep_last_attemp=parsed_args.keep_last,
                 parameters=parsed_args.parameters
             )
-        return self.dict2columns(d)
+        return self.dict2columns(d.to_dict())

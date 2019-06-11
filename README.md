@@ -73,27 +73,13 @@ Besides being a CLI application, `orpy` can be used as a library:
 
 ```
 >>> from orpy.client import client
->>> import pprint
 >>> orpy = client.OrpyClient(
 ...     url=ORCHESTRATOR_URL,
 ...     token=ORCHESTRATOR_TOKEN)
 >>> deployments = orpy.deployments.list()
->>> pprint.pprint(deployments[0])
-{u'cloudProviderName': u'provider-BARI',
- u'createdBy': {u'issuer': u'https://iam.deep-hybrid-datacloud.eu/',
-                u'subject': u'658e9821-af25-485e-a9e2-942c32c7ece8'},
- u'creationTime': u'2019-06-07T15:46+0000',
- u'links': [{u'href': u'https://paas.cloud.cnaf.infn.it/orchestrator/deployments/11e9893b-5e42-ea0d-9258-0242ac140005',
-             u'rel': u'self'},
-            {u'href': u'https://paas.cloud.cnaf.infn.it/orchestrator/deployments/11e9893b-5e42-ea0d-9258-0242ac140005/resources',
-             u'rel': u'resources'},
-            {u'href': u'https://paas.cloud.cnaf.infn.it/orchestrator/deployments/11e9893b-5e42-ea0d-9258-0242ac140005/template',
-             u'rel': u'template'}],
- u'outputs': {},
- u'physicalId': u'11e9893b-5e42-ea0d-9258-0242ac140005',
- u'status': u'CREATE_IN_PROGRESS',
- u'task': u'NONE',
- u'updateTime': u'2019-06-07T15:46+0000',
- u'uuid': u'11e9893b-5e42-ea0d-9258-0242ac140005'}
+>>> deployments[0]
+<Deployment cloudProviderName=provider-BARI, createdBy={u'subject': u'de28e179-ec86-4915-a748-7a37f8d80311', u'issuer': u'https://iam.deep-hybrid-datacloud.eu/'}, creationTime=2019-05-27T11:31+0000, links=[{u'href': u'https://paas.cloud.cnaf.infn.it/orchestrator/deployments/11e98073-06f3-6797-9258-0242ac140005', u'rel': u'self'}, {u'href': u'https://paas.cloud.cnaf.infn.it/orchestrator/deployments/11e98073-06f3-6797-9258-0242ac140005/resources', u'rel': u'resources'}, {u'href': u'https://paas.cloud.cnaf.infn.it/orchestrator/deployments/11e98073-06f3-6797-9258-0242ac140005/template', u'rel': u'template'}], outputs={}, physicalId=11e98073-06f3-6797-9258-0242ac140005, status=CREATE_FAILED, statusReason=Error while checking the deployment status; nested exception is feign.RetryableException: mesos.ui.sav.sk executing GET https://mesos.ui.sav.sk/marathon/v2/groups/11e98073-06f3-6797-9258-0242ac140005, task=NONE, updateTime=2019-05-29T02:05+0000, uuid=11e98073-06f3-6797-9258-0242ac140005>
+>>> deployments[0].status
+CREATE_FAILED
 >>>
 ```

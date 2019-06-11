@@ -157,15 +157,38 @@ class OrpyClient(object):
 
         self.http_log_resp(resp)
 
-        try:
-            body = resp.json()
-        except Exception:
-            body = resp.text
-
         if resp.status_code >= 400:
-            raise exceptions.from_response(resp, body, url, method)
+            raise exceptions.from_response(resp, resp.json(), url, method)
 
-        return resp, body
+        do_pagination = False
+
+        try:
+            content = resp.json().get("content", [])
+        except Exception:
+            do_pagination = True
+            content = resp.text
+
+        while not do_pagination:
+            curr, next_, last = self._get_links_from_response(resp)
+
+            # If we have curr, next and last this means that we are paginating
+            # therefore we need to append to the "contents"
+            if all([curr, next_, last]) and curr != last:
+                self.http_log_req(method, next_, kwargs)
+                resp = self.session.request(method, next_, **kwargs)
+                self.http_log_resp(resp)
+                content = resp.json().get("content", [])
+                content.extend(content)
+            else:
+                do_pagination = True
+
+        return resp, content
+
+    def _get_links_from_response(self, response):
+        d = {}
+        for link in response.json().get("links", []):
+            d[link["rel"]] = link["href"]
+        return d.get("self"), d.get("next"), d.get("last")
 
     def http_log_req(self, method, url, kwargs):
         if not self.http_debug:
