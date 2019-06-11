@@ -15,6 +15,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import argparse
 import sys
 
 from cliff import app
@@ -24,12 +25,17 @@ from cliff import complete
 from cliff import help
 
 from orpy.client import client
-from orpy import exceptions
 from orpy import utils
 from orpy import version
 
 
 class OrpyApp(app.App):
+    """Command line client for the INDIGO PaaS Orchestrator.
+
+    Please, before using this command put your a valid OpenID Connnect access
+    token into the ORCHESTRATOR_TOKEN environment variable, so that we can use
+    this token for authentication.
+    """
     commands = []
 
     def __init__(self):
@@ -46,7 +52,7 @@ class OrpyApp(app.App):
 
         cm = commandmanager.CommandManager('orpy.cli')
         super(OrpyApp, self).__init__(
-            description='INDIGO PaaS Orchestrator Python Client',
+            description="Command line client for the INDIGO PaaS Orchestrator",
             version=version.__version__,
             command_manager=cm,
             deferred_help=True,
@@ -62,13 +68,27 @@ class OrpyApp(app.App):
                                             debug=self.options.debug)
 
     def prepare_to_run_command(self, cmd):
+        if isinstance(cmd, help.HelpCommand):
+            return
+
+        if not self.options.orchestrator_url:
+            self.parser.error("No URL for the orchestrator has been suplied "
+                              "use --url or set the ORCHESTRATOR_URL "
+                              "environment variable.")
+
         if cmd.auth_required and not self.token:
-            raise exceptions.InvalidUsage("No token has beeen provided!")
+            self.parser.error("No token has been provided, please set the "
+                              "ORCHESTRATOR_TOKEN environment variable "
+                              "(see '%s help' for more details on how "
+                              "to set up authentication)" % self.parser.prog)
 
     def build_option_parser(self, description, version):
         parser = super(OrpyApp, self).build_option_parser(
-            description,
-            version)
+            self.__doc__,
+            version,
+            argparse_kwargs={
+                "formatter_class": argparse.RawDescriptionHelpFormatter
+            })
 
         # service token auth argument
         parser.add_argument(
