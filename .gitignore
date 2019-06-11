@@ -49,3 +49,7 @@ ChangeLog
 # Editors
 *~
 .*.swp
+
+.eggs/
+.venv/
+releasenotes/notes/reno.cache
