@@ -164,3 +164,55 @@ class DeploymentCreate(show.ShowOne):
                 keep_last_attemp=parsed_args.keep_last
             )
         return self.dict2columns(d)
+
+
+class DeploymentUpdate(show.ShowOne):
+    """Update an existing deployment."""
+
+    def get_parser(self, prog_name):
+        parser = super(DeploymentUpdate, self).get_parser(prog_name)
+
+        parser.add_argument("--callback-url",
+                            dest="callback",
+                            default=None,
+                            help="The callback url.")
+        parser.add_argument("--max-providers-retry",
+                            dest="max_retries",
+                            default=None,
+                            type=int,
+                            help="Maximum number of cloud providers to be "
+                                 "used in case of failure (Default is to "
+                                 "be unbounded).")
+        parser.add_argument("--keep-last-attempt",
+                            dest="keep_last",
+                            default=True,
+                            type=bool,
+                            help="In case of failure, keep the resources "
+                                 "allocated in the last try (Default: True, "
+                                 "accepts boolean values).")
+
+        parser.add_argument('uuid',
+                            metavar="<deployment uuid>",
+                            help="Deployment UUID to update.")
+        parser.add_argument('filename',
+                            metavar="<template file>",
+                            help="TOSCA template file.")
+        parser.add_argument('parameters',
+                            metavar="<parameter>=<value>",
+                            nargs="*",
+                            action=KeyValueAction,
+                            help="Input parameter for the deployment in the "
+                                 "form <parameter>=<value>. Can be specified "
+                                 "several times.")
+        return parser
+
+    def take_action(self, parsed_args):
+        with open(parsed_args.filename, "r") as f:
+            d = self.app.client.deployments.update(
+                uuid=parsed_args.uuid,
+                template=f.read(),
+                callback_url=parsed_args.callback,
+                max_providers_retry=parsed_args.max_retries,
+                keep_last_attemp=parsed_args.keep_last
+            )
+        return self.dict2columns(d)

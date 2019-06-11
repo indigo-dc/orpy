@@ -294,3 +294,18 @@ class Deployments(object):
         resp, body = self.client.post("./deployments/",
                                       json=json)
         return body
+
+    def update(self, uuid, template, callback_url=None,
+               max_providers_retry=None, keep_last_attemp=True):
+        json = {
+            "template": template,
+            "keepLastAttemp": keep_last_attemp,
+        }
+        if callback_url:
+            json["callback"] = callback_url
+        if max_providers_retry:
+            json["maxProvidersRetry"] = max_providers_retry
+
+        resp, body = self.client.put("./deployments/%s" % uuid,
+                                     json=json)
+        return body
