@@ -243,3 +243,19 @@ class Deployments(object):
         resp, body = self.client.request("./deployments/%s/template/" % uuid,
                                          "get")
         return body
+
+    def create(self, template, callback_url=None, max_providers_retry=None,
+               keep_last_attemp=True):
+        json = {
+            "template": template,
+            "keepLastAttemp": keep_last_attemp,
+        }
+        if callback_url:
+            json["callback"] = callback_url
+        if max_providers_retry:
+            json["maxProvidersRetry"] = max_providers_retry
+
+        resp, body = self.client.request("./deployments/",
+                                         "post",
+                                         json=json)
+        return body
