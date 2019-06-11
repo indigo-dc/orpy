@@ -65,6 +65,7 @@ class OrpyClient(object):
                 rql.setLevel(logging.WARNING)
 
         self._json = _JSONEncoder()
+        self.session = requests.Session()
 
     def request(self, url, method, json=None, **kwargs):
         """Send an HTTP request with the specified characteristics.
@@ -111,10 +112,7 @@ class OrpyClient(object):
 
         self.http_log_req(method, url, kwargs)
 
-        if method == "get":
-            resp = requests.get(url, **kwargs)
-        elif method == "post":
-            resp = requests.post(url, **kwargs)
+        resp = self.session.request(method, url, **kwargs)
 
         self.http_log_resp(resp)
 
@@ -208,11 +206,47 @@ class OrpyClient(object):
                 sha1sum = hashlib.sha1(value)  # nosec
                 target[key] = "{SHA1}%s" % sha1sum.hexdigest()
 
-    def _get(self, url):
-        return self.request(url, "get")
+    def head(self, url, **kwargs):
+        """Perform a HEAD request.
 
-    def _post(self, url, data):
-        return self.request(url, "post", payload=data)
+        This calls :py:meth:`.request()` with ``method`` set to ``HEAD``.
+        """
+        return self.request(url, 'HEAD', **kwargs)
+
+    def get(self, url, **kwargs):
+        """Perform a GET request.
+
+        This calls :py:meth:`.request()` with ``method`` set to ``GET``.
+        """
+        return self.request(url, 'GET', **kwargs)
+
+    def post(self, url, **kwargs):
+        """Perform a POST request.
+
+        This calls :py:meth:`.request()` with ``method`` set to ``POST``.
+        """
+        return self.request(url, 'POST', **kwargs)
+
+    def put(self, url, **kwargs):
+        """Perform a PUT request.
+
+        This calls :py:meth:`.request()` with ``method`` set to ``PUT``.
+        """
+        return self.request(url, 'PUT', **kwargs)
+
+    def delete(self, url, **kwargs):
+        """Perform a DELETE request.
+
+        This calls :py:meth:`.request()` with ``method`` set to ``DELETE``.
+        """
+        return self.request(url, 'DELETE', **kwargs)
+
+    def patch(self, url, **kwargs):
+        """Perform a PATCH request.
+
+        This calls :py:meth:`.request()` with ``method`` set to ``PATCH``.
+        """
+        return self.request(url, 'PATCH', **kwargs)
 
     def info(self):
         try:
@@ -231,17 +265,15 @@ class Deployments(object):
         self.client = client
 
     def index(self):
-        resp, body = self.client.request("./deployments", "get")
+        resp, body = self.client.get("./deployments")
         return body["content"]
 
     def show(self, uuid):
-        resp, body = self.client.request("./deployments/%s" % uuid,
-                                         "get")
+        resp, body = self.client.get("./deployments/%s" % uuid)
         return body
 
     def get_template(self, uuid):
-        resp, body = self.client.request("./deployments/%s/template/" % uuid,
-                                         "get")
+        resp, body = self.client.get("./deployments/%s/template/" % uuid)
         return body
 
     def create(self, template, callback_url=None, max_providers_retry=None,
@@ -255,7 +287,6 @@ class Deployments(object):
         if max_providers_retry:
             json["maxProvidersRetry"] = max_providers_retry
 
-        resp, body = self.client.request("./deployments/",
-                                         "post",
-                                         json=json)
+        resp, body = self.client.post("./deployments/",
+                                      json=json)
         return body
