@@ -43,7 +43,16 @@ class _JSONEncoder(json.JSONEncoder):
 
 
 class OrpyClient(object):
+    """An INDIGO-DataCloud PaaS orchestrator client class."""
+
     def __init__(self, url, token, debug=False):
+        """Initialization of OrpyClient object.
+
+        :param str url: Orchestrator URL
+        :param str token: OpenID Connect access token to use for auth
+        :param bool debug: whether to enable debug logging
+        """
+
         self.url = url
         self.token = token
 

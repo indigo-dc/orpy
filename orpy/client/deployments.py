@@ -16,27 +16,50 @@
 
 
 class Deployments(object):
+    """Manage Orchestrator deployments."""
+
     def __init__(self, client):
         self.client = client
 
     def index(self):
+        """List existing deployments."""
         resp, body = self.client.get("./deployments")
         return body["content"]
 
     def show(self, uuid):
+        """Show details about a deployment.
+
+        :param str uuid: The UUID of the deployment to show.
+        """
         resp, body = self.client.get("./deployments/%s" % uuid)
         return body
 
     def delete(self, uuid):
+        """Delete a deployment.
+
+        :param str uuid: The UUID of the deployment to delete.
+        """
         resp, body = self.client.delete("./deployments/%s" % uuid)
         return body
 
     def get_template(self, uuid):
+        """Get the TOSCA template of a deployment.
+
+        :param str uuid: The UUID of the deployment.
+        """
         resp, body = self.client.get("./deployments/%s/template/" % uuid)
         return body
 
     def create(self, template, callback_url=None, max_providers_retry=None,
                keep_last_attemp=True):
+        """Create a deployment.
+
+        :param str template: The TOSCA template to use.
+        :param str callback_url: The orchestrator callback url.
+        :param int max_providers_retry: Maximum number of providers to retry.
+        :param bool keep_last_attemp: Whether to keep the allocated resources
+                                      in case of failure.
+        """
         json = {
             "template": template,
             "keepLastAttemp": keep_last_attemp,
@@ -52,6 +75,15 @@ class Deployments(object):
 
     def update(self, uuid, template, callback_url=None,
                max_providers_retry=None, keep_last_attemp=True):
+        """Update a deployment.
+
+        :param str uuid: The UUID of the deployment.
+        :param str template: The TOSCA template to use.
+        :param str callback_url: The orchestrator callback url.
+        :param int max_providers_retry: Maximum number of providers to retry.
+        :param bool keep_last_attemp: Whether to keep the allocated resources
+                                      in case of failure.
+        """
         json = {
             "template": template,
             "keepLastAttemp": keep_last_attemp,
