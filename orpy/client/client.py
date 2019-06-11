@@ -26,6 +26,7 @@ import six
 from six.moves.urllib import parse
 
 from orpy.client import deployments
+from orpy.client import info
 from orpy.client import resources
 from orpy import exceptions
 from orpy import version
@@ -60,6 +61,7 @@ class OrpyClient(object):
 
         self.deployments = deployments.Deployments(self)
         self.resources = resources.Resources(self)
+        self.info = info.Info(self)
 
         self._logger = logging.getLogger(__name__)
 
@@ -259,14 +261,3 @@ class OrpyClient(object):
         This calls :py:meth:`.request()` with ``method`` set to ``PATCH``.
         """
         return self.request(url, 'PATCH', **kwargs)
-
-    def info(self):
-        try:
-            resp, body = self._get("./info")
-        except exceptions.ClientException:
-            raise exceptions.InvalidUrl(url=self.url)
-
-        if resp.status_code == 200:
-            return body
-        else:
-            raise exceptions.InvalidUrl(url=self.url)

@@ -14,21 +14,23 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from orpy import exceptions
 
-from cliff import show
 
+class Info(object):
+    """Get information about the Orchestrator."""
 
-class TestOrchestratorEndpoint(show.ShowOne):
-    """Test if the given URL is pointing to an orchestrator.
+    def __init__(self, client):
+        self.client = client
 
-    Use this command to check if the URL provided is actually from an INDIGO
-    PaaS Orchestrator.
-    """
+    def get(self):
+        """Get information about the Orchestrator."""
+        try:
+            resp, body = self.client.get("./info")
+        except exceptions.ClientException:
+            raise exceptions.InvalidUrl(url=self.client.url)
 
-    auth_required = False
-
-    def take_action(self, parsed_args):
-        d = self.app.client.info.get()
-        d["url"] = self.app_args.orchestrator_url
-
-        return self.dict2columns(d)
+        if resp.status_code == 200:
+            return body
+        else:
+            raise exceptions.InvalidUrl(url=self.client.url)
