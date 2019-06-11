@@ -15,6 +15,7 @@
 # under the License.
 
 from cliff import lister
+from cliff import show
 
 from orpy import utils
 
@@ -46,3 +47,23 @@ class ResourcesList(lister.Lister):
                   for s in ret]
 
         return columns, values
+
+
+class ResourcesShow(show.ShowOne):
+    """Show details about a resource for a given deployment."""
+
+    def get_parser(self, prog_name):
+        parser = super(ResourcesShow, self).get_parser(prog_name)
+        parser.add_argument('deployment_uuid',
+                            metavar="<deployment uuid>",
+                            help="Deployment UUID for the resource.")
+
+        parser.add_argument('resource_uuid',
+                            metavar="<resource uuid>",
+                            help="Resource UUID to show.")
+        return parser
+
+    def take_action(self, parsed_args):
+        d = self.app.client.resources.show(parsed_args.deployment_uuid,
+                                           parsed_args.resource_uuid)
+        return self.dict2columns(d)

@@ -319,3 +319,8 @@ class Resources(object):
     def index(self, uuid):
         resp, body = self.client.get("./deployments/%s/resources/" % uuid)
         return body["content"]
+
+    def show(self, deployment_uuid, resource_uuid):
+        resp, body = self.client.get("./deployments/%s/resources/%s" %
+                                     (deployment_uuid, resource_uuid))
+        return body
