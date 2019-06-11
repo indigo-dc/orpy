@@ -48,6 +48,7 @@ class OrpyClient(object):
         self.http_debug = debug
 
         self.deployments = Deployments(self)
+        self.resources = Resources(self)
 
         self._logger = logging.getLogger(__name__)
 
@@ -309,3 +310,12 @@ class Deployments(object):
         resp, body = self.client.put("./deployments/%s" % uuid,
                                      json=json)
         return body
+
+
+class Resources(object):
+    def __init__(self, client):
+        self.client = client
+
+    def index(self, uuid):
+        resp, body = self.client.get("./deployments/%s/resources/" % uuid)
+        return body["content"]
