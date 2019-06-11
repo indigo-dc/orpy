@@ -1,19 +1,47 @@
-.. orpy documentation master file, created by
-   sphinx-quickstart on Tue Jul  9 22:26:36 2013.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Orpy: Python bindings to the INDIGO-DataCloud PaaS Orchestrator API
+===================================================================
 
-Welcome to orpy's documentation!
-========================================================
+Release v\ |version|. (:ref:`Installation <installation>`)
+
+.. image:: https://img.shields.io/pypi/l/orpy.svg
+    :target: https://pypi.org/project/orpy/
+
+.. image:: https://img.shields.io/pypi/wheel/orpy.svg
+    :target: https://pypi.org/project/orpy/
+
+.. image:: https://img.shields.io/pypi/pyversions/orpy.svg
+    :target: https://pypi.org/project/orpy/
+
+Orpy is a client library for the INDIGO-DataCloud orchestrator REST API.
+There’s a :doc:`Python API <api>` (the :mod:`orpy.client`
+module), and a :doc:`command-line script <user/shell>` (installed as
+:program:`orpy`). Each implements the entire `INDIGO-DataCloud orchestrator
+REST API`_.
+
+.. _INDIGO-DataCloud orchestrator REST API: https://indigo-dc.github.io/orchestrator/restdocs/
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   readme
    installation
-   usage
+
+Usage:
+
+.. toctree::
+   user/shell
+   api
+
+Additional Notes
+----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   contributing
+   code_of_conduct
+   releasenotes/index
 
 Indices and tables
 ==================
