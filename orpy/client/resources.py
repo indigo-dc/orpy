@@ -21,7 +21,7 @@ class Resources(object):
     def __init__(self, client):
         self.client = client
 
-    def index(self, uuid):
+    def list(self, uuid):
         """List resources for a deployment.
 
         :param str uuid: The UUID of the deployment get the resources.

@@ -21,7 +21,7 @@ class Deployments(object):
     def __init__(self, client):
         self.client = client
 
-    def index(self):
+    def list(self):
         """List existing deployments."""
         resp, body = self.client.get("./deployments")
         return body["content"]

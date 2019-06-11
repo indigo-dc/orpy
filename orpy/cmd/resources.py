@@ -31,7 +31,7 @@ class ResourcesList(lister.Lister):
         return parser
 
     def take_action(self, parsed_args):
-        ret = self.app.client.resources.index(parsed_args.uuid)
+        ret = self.app.client.resources.list(parsed_args.uuid)
 
         columns = (
             'uuid',

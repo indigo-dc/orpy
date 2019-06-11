@@ -50,7 +50,7 @@ class DeploymentList(lister.Lister):
     # TODO(aloga): implement filters
 
     def take_action(self, parsed_args):
-        ret = self.app.client.deployments.index()
+        ret = self.app.client.deployments.list()
 
         columns = (
             'uuid',
