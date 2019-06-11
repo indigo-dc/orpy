@@ -161,7 +161,8 @@ class DeploymentCreate(show.ShowOne):
                 template=f.read(),
                 callback_url=parsed_args.callback,
                 max_providers_retry=parsed_args.max_retries,
-                keep_last_attemp=parsed_args.keep_last
+                keep_last_attemp=parsed_args.keep_last,
+                parameters=parsed_args.parameters
             )
         return self.dict2columns(d)
 
@@ -213,6 +214,7 @@ class DeploymentUpdate(show.ShowOne):
                 template=f.read(),
                 callback_url=parsed_args.callback,
                 max_providers_retry=parsed_args.max_retries,
-                keep_last_attemp=parsed_args.keep_last
+                keep_last_attemp=parsed_args.keep_last,
+                parameters=parsed_args.parameters
             )
         return self.dict2columns(d)

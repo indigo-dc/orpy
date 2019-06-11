@@ -51,7 +51,7 @@ class Deployments(object):
         return body
 
     def create(self, template, callback_url=None, max_providers_retry=None,
-               keep_last_attemp=True):
+               keep_last_attemp=True, parameters={}):
         """Create a deployment.
 
         :param str template: The TOSCA template to use.
@@ -63,6 +63,7 @@ class Deployments(object):
         json = {
             "template": template,
             "keepLastAttemp": keep_last_attemp,
+            "parameters": parameters,
         }
         if callback_url:
             json["callback"] = callback_url
@@ -74,7 +75,8 @@ class Deployments(object):
         return body
 
     def update(self, uuid, template, callback_url=None,
-               max_providers_retry=None, keep_last_attemp=True):
+               max_providers_retry=None, keep_last_attemp=True,
+               parameters={}):
         """Update a deployment.
 
         :param str uuid: The UUID of the deployment.
@@ -87,6 +89,7 @@ class Deployments(object):
         json = {
             "template": template,
             "keepLastAttemp": keep_last_attemp,
+            "parameters": parameters,
         }
         if callback_url:
             json["callback"] = callback_url
