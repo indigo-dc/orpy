@@ -16,6 +16,8 @@
 
 import os
 
+import six
+
 
 def env(*vars, **kwargs):
     """Search for the first defined of possibly many env vars
@@ -48,10 +50,24 @@ def get_item_properties(item, fields, mixed_case_fields=None):
         else:
             field_name = field.lower().replace(' ', '')
 
-        # FIXME(aloga): we need to move to objects, therefore
-        # we need to adapt this asap
-#        data = getattr(item, field_name, '')
-        data = item.get(field_name, '')
+        data = getattr(item, field_name, '')
+        if isinstance(data, dict):
+            data = format_dict(data)
 
         row.append(data)
     return tuple(row)
+
+
+def format_dict(data):
+    """Return a formatted string of key value pairs
+    :param data: a dict
+    :rtype: a string formatted to key='value'
+    """
+
+    if data is None:
+        return None
+
+    output = ""
+    for s in sorted(data):
+        output = output + s + "='" + six.text_type(data[s]) + "', "
+    return output[:-2]

@@ -79,8 +79,10 @@ class DeploymentShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        d = self.app.client.deployments.show(parsed_args.uuid)
-        return self.dict2columns(d.to_dict())
+        d = self.app.client.deployments.show(parsed_args.uuid).to_dict()
+        d.pop("links")
+        d["createdBy"] = utils.format_dict(d["createdBy"])
+        return self.dict2columns(d)
 
 
 class DeploymentDelete(command.Command):
