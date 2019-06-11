@@ -59,9 +59,9 @@ class OrpyClient(object):
 
         self.http_debug = debug
 
-        self.deployments = deployments.Deployments(self)
-        self.resources = resources.Resources(self)
-        self.info = info.Info(self)
+        self._deployments = deployments.Deployments(self)
+        self._resources = resources.Resources(self)
+        self._info = info.Info(self)
 
         self._logger = logging.getLogger(__name__)
 
@@ -80,6 +80,33 @@ class OrpyClient(object):
 
         self._json = _JSONEncoder()
         self.session = requests.Session()
+
+    @property
+    def deployments(self):
+        """Interface to query for deployments.
+
+        :return: Deployments interface.
+        :rtype: orpy.client.deployments.Deployments
+        """
+        return self._deployments
+
+    @property
+    def resources(self):
+        """Interface to query for resources.
+
+        :return: Resources interface.
+        :rtype: orpy.client.resources.Resources
+        """
+        return self._resources
+
+    @property
+    def info(self):
+        """Interface to query for Orchestrator information.
+
+        :return: Information interface.
+        :rtype: orpy.info.Info
+        """
+        return self._info
 
     def request(self, url, method, json=None, **kwargs):
         """Send an HTTP request with the specified characteristics.
