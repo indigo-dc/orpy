@@ -25,6 +25,8 @@ import requests
 import six
 from six.moves.urllib import parse
 
+from orpy.client import deployments
+from orpy.client import resources
 from orpy import exceptions
 from orpy import version
 
@@ -47,8 +49,8 @@ class OrpyClient(object):
 
         self.http_debug = debug
 
-        self.deployments = Deployments(self)
-        self.resources = Resources(self)
+        self.deployments = deployments.Deployments(self)
+        self.resources = resources.Resources(self)
 
         self._logger = logging.getLogger(__name__)
 
@@ -259,68 +261,3 @@ class OrpyClient(object):
             return body
         else:
             raise exceptions.InvalidUrl(url=self.url)
-
-
-class Deployments(object):
-    def __init__(self, client):
-        self.client = client
-
-    def index(self):
-        resp, body = self.client.get("./deployments")
-        return body["content"]
-
-    def show(self, uuid):
-        resp, body = self.client.get("./deployments/%s" % uuid)
-        return body
-
-    def delete(self, uuid):
-        resp, body = self.client.delete("./deployments/%s" % uuid)
-        return body
-
-    def get_template(self, uuid):
-        resp, body = self.client.get("./deployments/%s/template/" % uuid)
-        return body
-
-    def create(self, template, callback_url=None, max_providers_retry=None,
-               keep_last_attemp=True):
-        json = {
-            "template": template,
-            "keepLastAttemp": keep_last_attemp,
-        }
-        if callback_url:
-            json["callback"] = callback_url
-        if max_providers_retry:
-            json["maxProvidersRetry"] = max_providers_retry
-
-        resp, body = self.client.post("./deployments/",
-                                      json=json)
-        return body
-
-    def update(self, uuid, template, callback_url=None,
-               max_providers_retry=None, keep_last_attemp=True):
-        json = {
-            "template": template,
-            "keepLastAttemp": keep_last_attemp,
-        }
-        if callback_url:
-            json["callback"] = callback_url
-        if max_providers_retry:
-            json["maxProvidersRetry"] = max_providers_retry
-
-        resp, body = self.client.put("./deployments/%s" % uuid,
-                                     json=json)
-        return body
-
-
-class Resources(object):
-    def __init__(self, client):
-        self.client = client
-
-    def index(self, uuid):
-        resp, body = self.client.get("./deployments/%s/resources/" % uuid)
-        return body["content"]
-
-    def show(self, deployment_uuid, resource_uuid):
-        resp, body = self.client.get("./deployments/%s/resources/%s" %
-                                     (deployment_uuid, resource_uuid))
-        return body

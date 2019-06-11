@@ -23,7 +23,7 @@ from cliff import commandmanager
 from cliff import complete
 from cliff import help
 
-from orpy import client
+from orpy.client import client
 from orpy import exceptions
 from orpy import utils
 from orpy import version
