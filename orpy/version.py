@@ -19,7 +19,9 @@ import pbr
 version_info = pbr.version.VersionInfo('orpy')
 try:
     __version__ = version_info.version_string()
+    __release__ = version_info.release_string()
 except AttributeError:
     __version__ = None
+    __release__ = None
 
 user_agent = "orpy/%s" % __version__

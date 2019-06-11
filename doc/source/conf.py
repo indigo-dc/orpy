@@ -15,6 +15,7 @@
 import os
 import sys
 
+from orpy import version
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -53,6 +54,15 @@ master_doc = 'index'
 project = u'DEEP-Hybrid-DataCloud'
 copyright = u'2017-present, <a href="https://deep-hybrid-datacloud.eu">DEEP-Hybrid-DataCloud</a> consortium'
 author = u"DEEP-Hybrid-DataCloud consortium"
+
+# The version info for the project you're documenting, acts as replacement for
+# |version| and |release|, also used in various other places throughout the
+# built documents.
+#
+# The full version, including alpha/beta/rc tags.
+release = version.__release__
+# The short X.Y version.
+version = version.__version__
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True

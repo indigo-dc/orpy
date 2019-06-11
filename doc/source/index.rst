@@ -1,7 +1,7 @@
 Orpy: Python bindings to the INDIGO-DataCloud PaaS Orchestrator API
 ===================================================================
 
-Release v\ |version|. (:ref:`Installation <installation>`)
+Release v\ |release|. (:ref:`Installation <installation>`)
 
 .. image:: https://img.shields.io/pypi/l/orpy.svg
     :target: https://pypi.org/project/orpy/
