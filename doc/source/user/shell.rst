@@ -4,9 +4,25 @@
 Authentication
 --------------
 
-Before using :program:`orpy`, put your a valid OpenID Connnect access token
-into the ``ORCHESTRATOR_TOKEN`` environment variable, so that we can use this
-token for authentication.
+In order to interact with the INDIGO PaaS Orchestrator we need to use an
+OpenID Connect access token from a trusted OpenID Connect provider at the
+orchestrator.
+
+Please either store your access token in ``ORCHESTRATOR_TOKEN`` or set the
+account to use with :program:`oidc-agent` in the ``OIDC_ACCOUNT`` and the
+socket path of the oidc-agent in the ``OIDC_SOCK`` environment variable::
+
+   export ORCHESTRATOR_TOKEN=<your access token>
+      OR
+   export OIDC_SOCK=<path to the oidc-agent socket>
+   export OIDC_ACCOUNT=<account to use>
+
+Usually, the ``OIDC_SOCK`` environmental variable is already exported if you
+are using :program:`oidc-agent`.
+
+As an alternative, you can pass the socket path and the account through the
+command line with the ``--oidc-agent-sock`` and ``--oidc-agent-account``
+parameters.
 
 Usage
 -----

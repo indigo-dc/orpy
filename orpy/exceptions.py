@@ -37,6 +37,7 @@ class ClientException(Exception):
                     print("%s: %s" % (name, value))
                 six.reraise(exc_info[0], exc_info[1], exc_info[2])
 
+        message = "ERROR: " + message
         super(ClientException, self).__init__(message)
 
 

@@ -20,6 +20,7 @@ import hashlib
 import json
 import logging
 import uuid
+import warnings
 
 import requests
 import six
@@ -46,16 +47,42 @@ class _JSONEncoder(json.JSONEncoder):
 class OrpyClient(object):
     """An INDIGO-DataCloud PaaS orchestrator client class."""
 
-    def __init__(self, url, token, debug=False):
+    def __init__(self, url, oidc_agent=None, token=None, debug=False):
         """Initialization of OrpyClient object.
 
+        You MUST pass either a valid orpy.oidc.OpenIDConnectAgent object into
+        the oidc_agent parameter or a valid access token for authentication.
+        The former method is the preferred, you can create an object this way
+        (assuming that the oidc-agent account is named "oidc-agent-account":
+
+            from orpy import oidc
+            from orpy.client import client
+            oidc_agent = oidc.OpenIDConnectAgent("oidc-agent-account")
+
+            cli = client.OrpyClient(url, oidc_agent=oidc_agent)
+
+        Note that passing both will result in a warning, with the access token
+        passed in the token paramter ignored.
+
         :param str url: Orchestrator URL
-        :param str token: OpenID Connect access token to use for auth
+        :param orpy.oidc.OpenIDConnectAgent oidc_agent: OpenID Connect agent
+                                                        object to use for
+                                                        fetching access tokens
+        :param str token: OpenID Connect access token to use for auth.
         :param bool debug: whether to enable debug logging
         """
 
         self.url = url
-        self.token = token
+        self._token = token
+        self.oidc_agent = oidc_agent
+
+        if not any([oidc_agent, token]):
+            raise exceptions.InvalidUsage("Must pass either an oidc-agent "
+                                          "object or an access token.")
+        if all([oidc_agent, token]):
+            msg = ("Using both oidc-agent and access token means that the "
+                   "user provider token will be ignored.")
+            warnings.warn(msg, RuntimeWarning)
 
         self.http_debug = debug
 
@@ -80,6 +107,13 @@ class OrpyClient(object):
 
         self._json = _JSONEncoder()
         self.session = requests.Session()
+
+    @property
+    def token(self):
+        token = self._token
+        if self.oidc_agent is not None:
+            token = self.oidc_agent.get_token()["access_token"]
+        return token
 
     @property
     def deployments(self):

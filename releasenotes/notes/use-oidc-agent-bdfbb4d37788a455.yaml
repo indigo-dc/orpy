@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Leverage oidc-agent to get the user's access token when interacting with
+    the INDIGO PaaS orchestrator.
