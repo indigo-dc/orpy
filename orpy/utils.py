@@ -60,6 +60,7 @@ def get_item_properties(item, fields, mixed_case_fields=None):
 
 def format_dict(data):
     """Return a formatted string of key value pairs
+
     :param data: a dict
     :rtype: a string formatted to key='value'
     """
