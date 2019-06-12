@@ -24,7 +24,11 @@ class Deployments(object):
         self.client = client
 
     def list(self):
-        """List existing deployments."""
+        """List existing deployments.
+
+        :return: List of orpy.client.base.Deployment
+        :rtype: list
+        """
         resp, results = self.client.get("./deployments")
         return [base.Deployment(data) for data in results]
 
@@ -32,6 +36,9 @@ class Deployments(object):
         """Show details about a deployment.
 
         :param str uuid: The UUID of the deployment to show.
+
+        :return: The deployment requested
+        :rtype: orpy.client.base.Deployment
         """
         resp, result = self.client.get("./deployments/%s" % uuid)
         return base.Deployment(result)
@@ -40,6 +47,9 @@ class Deployments(object):
         """Delete a deployment.
 
         :param str uuid: The UUID of the deployment to delete.
+
+        :return: None
+        :rtype: None
         """
         resp, body = self.client.delete("./deployments/%s" % uuid)
         return
@@ -48,6 +58,9 @@ class Deployments(object):
         """Get the TOSCA template of a deployment.
 
         :param str uuid: The UUID of the deployment.
+
+        :return: The TOSCA template for the deployment
+        :rtype: orpy.client.base.TOSCATemplate
         """
         resp, result = self.client.get("./deployments/%s/template/" % uuid)
         info = {"template": result,
@@ -63,6 +76,9 @@ class Deployments(object):
         :param int max_providers_retry: Maximum number of providers to retry.
         :param bool keep_last_attemp: Whether to keep the allocated resources
                                       in case of failure.
+
+        :return: The created deployment
+        :rtype: orpy.client.base.Deployment
         """
         json = {
             "template": template,
@@ -89,6 +105,9 @@ class Deployments(object):
         :param int max_providers_retry: Maximum number of providers to retry.
         :param bool keep_last_attemp: Whether to keep the allocated resources
                                       in case of failure.
+
+        :return: The updated deployment
+        :rtype: orpy.client.base.Deployment
         """
         json = {
             "template": template,

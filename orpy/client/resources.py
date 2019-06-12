@@ -27,6 +27,9 @@ class Resources(object):
         """List resources for a deployment.
 
         :param str uuid: The UUID of the deployment get the resources.
+
+        :return: A list of orpy.client.base.Resource
+        :rtype: list
         """
         resp, results = self.client.get("./deployments/%s/resources/" % uuid)
         return [base.Resource(result) for result in results]
@@ -36,6 +39,9 @@ class Resources(object):
 
         :param str resource_uuid: The UUID of the deployment get the resource.
         :param str deployment_uuid: The UUID of the resource.
+
+        :return: The resource requested
+        :rtype: orpy.client.base.Resource
         """
         resp, result = self.client.get("./deployments/%s/resources/%s" %
                                        (deployment_uuid, resource_uuid))
