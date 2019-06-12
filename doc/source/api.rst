@@ -45,3 +45,10 @@ Information interface
 
 .. automodule:: orpy.client.info
     :members:
+
+Orchestrator resources objects
+------------------------------
+
+.. automodule:: orpy.client.base
+    :members:
+    :inherited-members:

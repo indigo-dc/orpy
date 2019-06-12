@@ -18,7 +18,14 @@ import copy
 
 
 class BaseObject(object):
+    """Base class for all objects that represents orchestrator resoruces."""
+
     def __init__(self, info):
+        """Initalize the object.
+
+        :param dict info: A dictionary object containing the object's
+                          information
+        """
         self._info = {}
         self._add_details(info)
         self.uuid = info.get("uuid", None)
@@ -61,9 +68,19 @@ class BaseObject(object):
         return not self == other
 
     def set_info(self, key, value):
+        """Set an objects information with key, value.
+
+        :param key: the element to set
+        :param value: the value for the element
+        """
         self._info[key] = value
 
     def to_dict(self):
+        """Translate the object into a dictionary.
+
+        :return: A dictionary contaning the object representation
+        :rtype: dict
+        """
         return copy.deepcopy(self._info)
 
     def get(self, k, default=None):
@@ -74,16 +91,20 @@ class BaseObject(object):
 
 
 class Deployment(BaseObject):
+    """Object that represents a deployment."""
     pass
 
 
 class Resource(BaseObject):
+    """Object that represents a Resource."""
     pass
 
 
 class TOSCATemplate(BaseObject):
+    """Object that repesents a TOSCA template."""
     pass
 
 
 class OrchestratorInfo(BaseObject):
+    """Object that represents the Orchestrtor information."""
     pass

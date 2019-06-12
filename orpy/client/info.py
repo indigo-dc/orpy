@@ -28,7 +28,7 @@ class Info(object):
         """Get information about the Orchestrator.
 
         :return: Information about the orchestrator.
-        :rtype: base.OrchestratorInfo
+        :rtype: orpy.client.base.OrchestratorInfo
         """
         try:
             resp, body = self.client.get("./info")
