@@ -14,6 +14,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from orpy.client import base
 from orpy import exceptions
 
 
@@ -24,13 +25,18 @@ class Info(object):
         self.client = client
 
     def get(self):
-        """Get information about the Orchestrator."""
+        """Get information about the Orchestrator.
+
+        :return: Information about the orchestrator.
+        :rtype: base.OrchestratorInfo
+        """
         try:
             resp, body = self.client.get("./info")
         except exceptions.ClientException:
             raise exceptions.InvalidUrl(url=self.client.url)
 
         if resp.status_code == 200:
-            return body
+            body["url"] = self.client.url
+            return base.OrchestratorInfo(body)
         else:
             raise exceptions.InvalidUrl(url=self.client.url)

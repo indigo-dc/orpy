@@ -163,7 +163,7 @@ class OrpyClient(object):
         do_pagination = False
 
         try:
-            content = resp.json().get("content", [])
+            content = resp.json().get("content", resp.json())
         except Exception:
             do_pagination = True
             content = resp.text

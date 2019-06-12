@@ -21,7 +21,7 @@ class BaseObject(object):
     def __init__(self, info):
         self._info = {}
         self._add_details(info)
-        self.uuid = info["uuid"]
+        self.uuid = info.get("uuid", None)
 
     def __repr__(self):
         reprkeys = sorted(k
@@ -82,4 +82,8 @@ class Resource(BaseObject):
 
 
 class TOSCATemplate(BaseObject):
+    pass
+
+
+class OrchestratorInfo(BaseObject):
     pass
