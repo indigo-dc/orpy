@@ -2,6 +2,8 @@
 
 Python library and CLI for the INDIGO PaaS Orchestrator.
 
+<img src="https://marketplace.deep-hybrid-datacloud.eu/images/logo-deep.png" width=200 alt="DEEP-Hybrid-DataCloud logo"/>
+
 * Free software: Apache License 2.0
 * Source: https://github.com/indigo-dc/orpy
 * Documentation: https://orpy.readthedocs.io/
