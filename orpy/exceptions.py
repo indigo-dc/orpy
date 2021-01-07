@@ -41,6 +41,11 @@ class ClientException(Exception):
         super(ClientException, self).__init__(message)
 
 
+class AuthException(ClientException):
+    message = ("An exception has happened while obtaining an access token"
+               " (err: %(err)s)")
+
+
 class InvalidUsage(ClientException):
     message = "Invalid client usage"
 
