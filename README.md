@@ -23,6 +23,9 @@ what to do.
 
     export ORCHESTRATOR_TOKEN=<your access token here>
 
+Please check the [documentation](https://docs.deep-hybrid-datacloud.eu/projects/orpy/en/stable/user/shell.html)
+for more details on how to set the credentials.
+
 Then, the usage is as follows:
 
     usage: orpy [--version] [-v | -q] [--log-file LOG_FILE] [-h] [--debug]
