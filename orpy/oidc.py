@@ -64,10 +64,12 @@ class OpenIDConnectAgent(object):
                 else:
                     break
         except socket.error as err:
-            raise err
-            raise exceptions.ClientException("Cannot communicate with the "
-                                             "oidc-agent: %s" % err)
+            raise exceptions.AuthExceptiob(err="Cannot communicate with the "
+                                               "oidc-agent: %s" % err)
         finally:
             self._sock.close()
 
-        return json.loads(data)
+        token = json.loads(data)
+        if token.get("status") == "failure":
+            raise exceptions.AuthException(err=token.get("error"))
+        return token
