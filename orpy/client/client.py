@@ -72,7 +72,7 @@ class OrpyClient(object):
         :param bool debug: whether to enable debug logging
         """
 
-        self.url = url
+        self.url = url + "/"
         self._token = token
         self.oidc_agent = oidc_agent
 
