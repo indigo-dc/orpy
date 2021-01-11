@@ -76,13 +76,39 @@ class DeploymentShow(show.ShowOne):
         parser.add_argument('uuid',
                             metavar="<deployment uuid>",
                             help="Deployment UUID to show.")
+        parser.add_argument('-l', '--long',
+                            action="store_true",
+                            default=False,
+                            help="Show additional fields in output.")
         return parser
 
     def take_action(self, parsed_args):
         d = self.app.client.deployments.show(parsed_args.uuid).to_dict()
-        d.pop("links")
-        d["createdBy"] = utils.format_dict(d["createdBy"])
-        return self.dict2columns(d)
+
+        is_table = parsed_args.formatter == "table"
+
+        if not parsed_args.long:
+            rm = [
+                "links",
+                "cloudProviderEndpoint"
+                "physicalId"
+                "task"
+            ]
+        else:
+            rm = []
+
+        if is_table:
+            links = {}
+            for i in d["links"]:
+                links[i["rel"]] = i["href"]
+
+            d["links"] = utils.format_dict(links)
+            d["cloudProviderEndpoint"] = utils.format_dict(
+                d["cloudProviderEndpoint"]
+            )
+            d["createdBy"] = utils.format_dict(d["createdBy"])
+
+        return self.dict2columns({k: v for k, v in d.items() if k not in rm})
 
 
 class DeploymentDelete(command.Command):

@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    New `--long` option to provide long output when listing the deployments.
+other:
+  - |
+    Output has changed in order to be more human readable.

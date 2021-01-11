@@ -58,6 +58,10 @@ def get_item_properties(item, fields, mixed_case_fields=None):
     return tuple(row)
 
 
+def format_list_of_dicts(data, sep="\n"):
+    return sep.join([format_dict(d) for d in data])
+
+
 def format_dict(data):
     """Return a formatted string of key value pairs
 
@@ -70,5 +74,5 @@ def format_dict(data):
 
     output = ""
     for s in sorted(data):
-        output = output + s + "='" + six.text_type(data[s]) + "', "
+        output = output + s + ": " + six.text_type(data[s]) + "\n"
     return output[:-2]
