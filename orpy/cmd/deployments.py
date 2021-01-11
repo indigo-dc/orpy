@@ -90,9 +90,9 @@ class DeploymentShow(show.ShowOne):
         if not parsed_args.long:
             rm = [
                 "links",
-                "cloudProviderEndpoint"
-                "physicalId"
-                "task"
+                "cloudProviderEndpoint",
+                "physicalId",
+                "task",
             ]
         else:
             rm = []

@@ -20,7 +20,7 @@ from cliff import show
 from orpy import utils
 
 
-class TestOrchestratorEndpoint(show.ShowOne):
+class OrchestratorEndpointInfo(show.ShowOne):
     """Test if the given URL is pointing to an orchestrator.
 
     Use this command to check if the URL provided is actually from an INDIGO
