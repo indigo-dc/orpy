@@ -108,3 +108,8 @@ class TOSCATemplate(BaseObject):
 class OrchestratorInfo(BaseObject):
     """Object that represents the Orchestrtor information."""
     pass
+
+
+class OrchestratorConfiguration(BaseObject):
+    """Object that represents the Orchestrtor information."""
+    pass

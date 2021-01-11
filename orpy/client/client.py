@@ -26,6 +26,7 @@ import requests
 import six
 from six.moves.urllib import parse
 
+from orpy.client import config
 from orpy.client import deployments
 from orpy.client import info
 from orpy.client import resources
@@ -89,6 +90,7 @@ class OrpyClient(object):
         self._deployments = deployments.Deployments(self)
         self._resources = resources.Resources(self)
         self._info = info.Info(self)
+        self._config = config.Config(self)
 
         self._logger = logging.getLogger(__name__)
 
@@ -132,6 +134,15 @@ class OrpyClient(object):
         :rtype: orpy.client.resources.Resources
         """
         return self._resources
+
+    @property
+    def config(self):
+        """Interface to query for Orchestrator configuration.
+
+        :return: Configuration interface.
+        :rtype: orpy.info.Config
+        """
+        return self._config
 
     @property
     def info(self):

@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    New command `configuration show` allows to retrieve information from the
+    orchestrator regarding its configuration.
