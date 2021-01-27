@@ -63,6 +63,30 @@ class OrpyApp(app.App):
     def initialize_app(self, argv):
         for cmd in self.commands:
             self.command_manager.add_command(cmd.__name__.lower(), cmd)
+
+    def prepare_to_run_command(self, cmd):
+        if isinstance(cmd, help.HelpCommand):
+            return
+
+        if not self.options.orchestrator_url:
+            self.parser.error("No URL for the orchestrator has been suplied "
+                              "use --url or set the ORCHESTRATOR_URL "
+                              "environment variable.")
+
+        if not cmd.auth_required:
+            return
+
+        if (not all([self.options.oidc_agent_sock,
+                     self.options.oidc_agent_account])) and not self.token:
+
+            self.parser.error("No oidc-agent has been set up or no access "
+                              "token has been provided, please set the "
+                              "ORCHESTRATOR_TOKEN environment variable or "
+                              "set up an oidc-agent "
+                              "(see '%s help' for more details on how "
+                              "to set up authentication)" %
+                              self.parser.prog)
+
         self.token = utils.env("ORCHESTRATOR_TOKEN")
 
         if self.options.oidc_agent_sock and self.options.oidc_agent_account:
@@ -76,27 +100,6 @@ class OrpyApp(app.App):
                                             oidc_agent=self.oidc_agent,
                                             token=self.token,
                                             debug=self.options.debug)
-
-    def prepare_to_run_command(self, cmd):
-        if isinstance(cmd, help.HelpCommand):
-            return
-
-        if not self.options.orchestrator_url:
-            self.parser.error("No URL for the orchestrator has been suplied "
-                              "use --url or set the ORCHESTRATOR_URL "
-                              "environment variable.")
-
-        if cmd.auth_required:
-            if (not all([self.options.oidc_agent_sock,
-                         self.options.oidc_agent_account])) and not self.token:
-
-                self.parser.error("No oidc-agent has been set up or no access "
-                                  "token has been provided, please set the "
-                                  "ORCHESTRATOR_TOKEN environment variable or "
-                                  "set up an oidc-agent "
-                                  "(see '%s help' for more details on how "
-                                  "to set up authentication)" %
-                                  self.parser.prog)
 
     def build_option_parser(self, description, version):
         auth_help = """Authentication:
