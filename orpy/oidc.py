@@ -73,3 +73,38 @@ class OpenIDConnectAgent(object):
         if token.get("status") == "failure":
             raise exceptions.AuthException(err=token.get("error"))
         return token
+
+
+class OpenIDConnectSession(object):
+    """Get the token from an object session.
+
+    This class will try to obtain the token from an object derived from the
+    requests.Session class. Namely we will get the object from the "token"
+    attribute of the session object.
+
+    This follows the approach implemented in Flask Dance Session objects, as
+    explained here [1].
+
+    [1]: https://flask-dance.readthedocs.io/en/latest/api.html#sessions
+    """
+
+    def __init__(self, session):
+        """Initialize the OpenID Connect Session.
+
+        :param session: A request.Session subclass object, containing a "token"
+                        attribute where we will obtain the access token.
+        """
+
+        if not (getattr(session, "token") and
+                isinstance(session.token, dict)):
+            raise exceptions.InvalidUsage("Session object is not valid")
+        self._session = session
+
+    def get_token(self):
+        """Communicate with the oidc agent and get an access token.
+
+        :returns: A dictionary containing the access token
+        :rtype: dict
+        """
+        token = self._session.token
+        return token

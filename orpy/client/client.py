@@ -48,12 +48,16 @@ class _JSONEncoder(json.JSONEncoder):
 class OrpyClient(object):
     """An INDIGO-DataCloud PaaS orchestrator client class."""
 
-    def __init__(self, url, oidc_agent=None, token=None, debug=False):
+    def __init__(self, url, oidc_agent=None, token=None, oidc_session=None,
+                 debug=False):
         """Initialization of OrpyClient object.
 
-        You MUST pass either a valid orpy.oidc.OpenIDConnectAgent object into
-        the oidc_agent parameter or a valid access token for authentication.
-        The former method is the preferred, you can create an object this way
+        You MUST pass either:
+            - An orpy.oidc.OpenIDConnectAgent object (oidc_agent parameter)
+            - An orpy.oidc.OpenIDConnectSession object (oidc_session parameter)
+            - An access token for authentication (token parameter)
+
+        The first method is the preferred, you can create an object this way
         (assuming that the oidc-agent account is named "oidc-agent-account":
 
             from orpy import oidc
@@ -62,13 +66,31 @@ class OrpyClient(object):
 
             cli = client.OrpyClient(url, oidc_agent=oidc_agent)
 
-        Note that passing both will result in a warning, with the access token
-        passed in the token paramter ignored.
+        The second method is only useful when you are programming a library
+        and have access to a requests.Request like object session, like the
+        ones used by Flask Dance:
+
+            from orpy import oidc
+            from orpy.client import client
+            oidc_session = oidc.OpenIDConnectSession(flask_blueprint.session)
+
+            cli = client.OrpyClient(url oidc_session=oidc_session)
+
+        Note that passing more than one of the above methods will result in a
+        warning, not an error. In that case, the preference is the following
+        (note also that if one method fails we will not continue to the next
+        one, so the rest of the methods are actually ignored):
+            - oidc_agent
+            - oidc_session
+            - token
 
         :param str url: Orchestrator URL
         :param orpy.oidc.OpenIDConnectAgent oidc_agent: OpenID Connect agent
                                                         object to use for
-                                                        fetching access tokens
+                                                        fetching access tokens.
+        :param orpy.oidc.OpenIDConnectSession oidc_session: OpenID Connect
+                                                            session to use for
+                                                            fetching the token.
         :param str token: OpenID Connect access token to use for auth.
         :param bool debug: whether to enable debug logging
         """
@@ -76,13 +98,16 @@ class OrpyClient(object):
         self.url = url + "/"
         self._token = token
         self.oidc_agent = oidc_agent
+        self.oidc_session = oidc_session
 
-        if not any([oidc_agent, token]):
+        if not any([oidc_agent, oidc_session, token]):
             raise exceptions.InvalidUsage("Must pass either an oidc-agent "
-                                          "object or an access token.")
-        if all([oidc_agent, token]):
-            msg = ("Using both oidc-agent and access token means that the "
-                   "user provider token will be ignored.")
+                                          "object, an oidc-session object "
+                                          "or an access token.")
+        if [oidc_agent, oidc_session, token].count(None) < 2:
+            msg = ("Using more than one of oidc-agent oidc-session and access "
+                   "token means that only one of them will be used, check "
+                   "documentation.")
             warnings.warn(msg, RuntimeWarning)
 
         self.http_debug = debug
@@ -115,6 +140,8 @@ class OrpyClient(object):
         token = self._token
         if self.oidc_agent is not None:
             token = self.oidc_agent.get_token()["access_token"]
+        elif self.oidc_session is not None:
+            token = self.oidc_session.get_token()["access_token"]
         return token
 
     @property
