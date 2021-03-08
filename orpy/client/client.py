@@ -180,7 +180,7 @@ class OrpyClient(object):
         """
         return self._info
 
-    def request(self, url, method, json=None, **kwargs):
+    def request(self, url, method, payload=None, **kwargs):
         """Send an HTTP request with the specified characteristics.
 
         Wrapper around `requests.Session.request` to handle tasks such as
@@ -194,13 +194,13 @@ class OrpyClient(object):
                         with the attribute self.url. If a fully qualified URL
                         is provided then self.url will be ignored.
         :param str method: The http method to use. (e.g. 'GET', 'POST')
-        :param json: Some data to be represented as JSON. (optional)
+        :param payload: Some data to be represented as JSON. (optional)
         :param kwargs: any other parameter that can be passed to
                        :meth:`requests.Session.request` (such as `headers`).
                        Except:
 
-                       - `data` will be overwritten by the data in the `json`
-                         param.
+                       - `data` will be overwritten by the data in the
+                         `payload` param.
                        - `allow_redirects` is ignored as redirects are handled
                          by the session.
 
@@ -217,9 +217,9 @@ class OrpyClient(object):
         if self.token is not None:
             kwargs["headers"]["Authorization"] = "Bearer" + self.token
 
-        if json is not None:
+        if payload is not None:
             kwargs["headers"].setdefault('Content-Type', 'application/json')
-            kwargs['data'] = self._json.encode(json)
+            kwargs['data'] = self._json.encode(payload)
 
         url = parse.urljoin(self.url, url)
 
@@ -230,7 +230,11 @@ class OrpyClient(object):
         self.http_log_resp(resp)
 
         if resp.status_code >= 400:
-            raise exceptions.from_response(resp, resp.json(), url, method)
+            try:
+                body = resp.json()
+            except json.decoder.JSONDecodeError:
+                body = resp.text
+            raise exceptions.from_response(resp, body, url, method)
 
         do_pagination = False
 
