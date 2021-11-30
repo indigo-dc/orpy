@@ -29,7 +29,7 @@ class Deployments(object):
         :return: List of orpy.client.base.Deployment
         :rtype: list
         """
-        resp, results = self.client.get("./deployments")
+        resp, results = self.client.get("./deployments?size=9999")
         return [base.Deployment(data) for data in results]
 
     def show(self, uuid):
