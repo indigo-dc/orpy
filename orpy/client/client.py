@@ -222,8 +222,8 @@ class OrpyClient(object):
                 self.http_log_req(method, next_, kwargs)
                 resp = self.session.request(method, next_, **kwargs)
                 self.http_log_resp(resp)
-                content = resp.json().get("content", [])
-                content.extend(content)
+                next_content = resp.json().get("content", [])
+                content.extend(next_content)
             else:
                 do_pagination = True
 
