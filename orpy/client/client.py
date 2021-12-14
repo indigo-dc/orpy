@@ -203,7 +203,7 @@ class OrpyClient(object):
         self.http_log_resp(resp)
 
         if resp.status_code >= 400:
-            raise exceptions.from_response(resp, resp.json(), url, method)
+            raise exceptions.from_response(resp, url, method)
 
         do_pagination = False
 

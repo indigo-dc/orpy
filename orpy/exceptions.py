@@ -14,31 +14,33 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import json.decoder
 import sys
 
 import six
 
 
 class ClientException(Exception):
-    message = "An unknown exception occurred."
+    """
+    The base exception class for all exceptions this library raises.
+    """
+    message = 'Unknown Error'
 
-    def __init__(self, message=None, **kwargs):
-        self.kwargs = kwargs
+    def __init__(self, code, message=None, details=None, request_id=None,
+                 url=None, method=None):
+        self.code = code
+        self.message = message or self.__class__.message
+        self.details = details
+        self.request_id = request_id
+        self.url = url
+        self.method = method
 
-        if not message:
-            try:
-                message = self.message % kwargs
-            except Exception:
-                exc_info = sys.exc_info()
-                # kwargs doesn't match a variable in the message
-                # log the issue and the kwargs
-                print('Exception in string format operation')
-                for name, value in kwargs.iteritems():
-                    print("%s: %s" % (name, value))
-                six.reraise(exc_info[0], exc_info[1], exc_info[2])
+    def __str__(self):
+        formatted_string = "%s (HTTP %s)" % (self.message, self.code)
+        if self.request_id:
+            formatted_string += " (Request-ID: %s)" % self.request_id
 
-        message = "ERROR: " + message
-        super(ClientException, self).__init__(message)
+        return formatted_string
 
 
 class AuthException(ClientException):
@@ -156,7 +158,7 @@ _error_classes = [BadRequest, Unauthorized, Forbidden, NotFound,
 _code_map = dict((c.http_status, c) for c in _error_classes)
 
 
-def from_response(response, body, url, method=None):
+def from_response(response, url, method=None):
     """Return an instance of ClientException or subclass based on a response.
 
     Usage::
@@ -173,6 +175,11 @@ def from_response(response, body, url, method=None):
         'url': url,
         'request_id': None,
     }
+
+    try:
+        body = response.json()
+    except json.decoder.JSONDecodeError:
+        body = None
 
     if body:
         message = "n/a"
