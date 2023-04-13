@@ -30,7 +30,7 @@ class OrchestratorEndpointInfo(show.ShowOne):
     auth_required = False
 
     def take_action(self, parsed_args):
-        d = self.app.client.info.get().to_dict()
+        d = self.app.client.info.get(authenticated=self.auth_required).to_dict()
         for k, v in d.items():
             if isinstance(v, dict):
                 d[k] = utils.format_dict(v)

@@ -76,29 +76,27 @@ class OrpyApp(app.App):
                 "environment variable."
             )
 
-        if not cmd.auth_required:
-            return
+        if cmd.auth_required:
+            if (
+                not all([self.options.oidc_agent_sock, self.options.oidc_agent_account])
+            ) and not self.token:
 
-        if (
-            not all([self.options.oidc_agent_sock, self.options.oidc_agent_account])
-        ) and not self.token:
+                self.parser.error(
+                    "No oidc-agent has been set up or no access "
+                    "token has been provided, please set the "
+                    "ORCHESTRATOR_TOKEN environment variable or "
+                    "set up an oidc-agent "
+                    "(see '%s help' for more details on how "
+                    "to set up authentication)" % self.parser.prog
+                )
 
-            self.parser.error(
-                "No oidc-agent has been set up or no access "
-                "token has been provided, please set the "
-                "ORCHESTRATOR_TOKEN environment variable or "
-                "set up an oidc-agent "
-                "(see '%s help' for more details on how "
-                "to set up authentication)" % self.parser.prog
-            )
+            self.token = utils.env("ORCHESTRATOR_TOKEN", default=None)
 
-        self.token = utils.env("ORCHESTRATOR_TOKEN")
-
-        if self.options.oidc_agent_sock and self.options.oidc_agent_account:
-            self.oidc_agent = oidc.OpenIDConnectAgent(
-                self.options.oidc_agent_account,
-                socket_path=self.options.oidc_agent_sock,
-            )
+            if self.options.oidc_agent_sock and self.options.oidc_agent_account:
+                self.oidc_agent = oidc.OpenIDConnectAgent(
+                    self.options.oidc_agent_account,
+                    socket_path=self.options.oidc_agent_sock,
+                )
 
         if self.client is None:
             self.client = client.OrpyClient(

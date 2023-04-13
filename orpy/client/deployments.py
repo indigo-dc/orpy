@@ -23,46 +23,51 @@ class Deployments(object):
     def __init__(self, client):
         self.client = client
 
-    def list(self):
+    def list(self, **kwargs):
         """List existing deployments.
+
+        :param kwargs: Other arguments passed to the request client.
 
         :return: List of orpy.client.base.Deployment
         :rtype: list
         """
-        resp, results = self.client.get("./deployments")
+        resp, results = self.client.get("./deployments", **kwargs)
         return [base.Deployment(data) for data in results]
 
-    def show(self, uuid):
+    def show(self, uuid, **kwargs):
         """Show details about a deployment.
 
         :param str uuid: The UUID of the deployment to show.
+        :param kwargs: Other arguments passed to the request client.
 
         :return: The deployment requested
         :rtype: orpy.client.base.Deployment
         """
-        resp, result = self.client.get("./deployments/%s" % uuid)
+        resp, result = self.client.get("./deployments/%s" % uuid, **kwargs)
         return base.Deployment(result)
 
-    def delete(self, uuid):
+    def delete(self, uuid, **kwargs):
         """Delete a deployment.
 
         :param str uuid: The UUID of the deployment to delete.
+        :param kwargs: Other arguments passed to the request client.
 
         :return: None
         :rtype: None
         """
-        resp, body = self.client.delete("./deployments/%s" % uuid)
+        resp, body = self.client.delete("./deployments/%s" % uuid, **kwargs)
         return
 
-    def get_template(self, uuid):
+    def get_template(self, uuid, **kwargs):
         """Get the TOSCA template of a deployment.
 
         :param str uuid: The UUID of the deployment.
+        :param kwargs: Other arguments passed to the request client.
 
         :return: The TOSCA template for the deployment
         :rtype: orpy.client.base.TOSCATemplate
         """
-        resp, result = self.client.get("./deployments/%s/template/" % uuid)
+        resp, result = self.client.get("./deployments/%s/template/" % uuid, **kwargs)
         info = {"template": result, "uuid": uuid}
         return base.TOSCATemplate(info)
 
@@ -73,6 +78,7 @@ class Deployments(object):
         max_providers_retry=None,
         keep_last_attemp=True,
         parameters={},
+        **kwargs,
     ):
         """Create a deployment.
 
@@ -81,6 +87,7 @@ class Deployments(object):
         :param int max_providers_retry: Maximum number of providers to retry.
         :param bool keep_last_attemp: Whether to keep the allocated resources
                                       in case of failure.
+        :param kwargs: Other arguments passed to the request client.
 
         :return: The created deployment
         :rtype: orpy.client.base.Deployment
@@ -95,7 +102,7 @@ class Deployments(object):
         if max_providers_retry:
             json["maxProvidersRetry"] = max_providers_retry
 
-        resp, result = self.client.post("./deployments/", json=json)
+        resp, result = self.client.post("./deployments/", json=json, **kwargs)
         return base.Deployment(result)
 
     def update(
@@ -106,6 +113,7 @@ class Deployments(object):
         max_providers_retry=None,
         keep_last_attemp=True,
         parameters={},
+        **kwargs,
     ):
         """Update a deployment.
 
@@ -115,6 +123,7 @@ class Deployments(object):
         :param int max_providers_retry: Maximum number of providers to retry.
         :param bool keep_last_attemp: Whether to keep the allocated resources
                                       in case of failure.
+        :param kwargs: Other arguments passed to the request client.
 
         :return: The updated deployment
         :rtype: orpy.client.base.Deployment
@@ -129,5 +138,5 @@ class Deployments(object):
         if max_providers_retry:
             json["maxProvidersRetry"] = max_providers_retry
 
-        resp, result = self.client.put("./deployments/%s" % uuid, json=json)
+        resp, result = self.client.put("./deployments/%s" % uuid, json=json, **kwargs)
         return base.Deployment(result)

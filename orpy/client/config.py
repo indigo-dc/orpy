@@ -24,14 +24,16 @@ class Config(object):
     def __init__(self, client):
         self.client = client
 
-    def get(self):
+    def get(self, **kwargs):
         """Get Configurted endpoints for the orchestrator.
+
+        :param kwargs: Other arguments passed to the request client.
 
         :return: Configured endpoints for the orchestrator.
         :rtype: orpy.client.base.OrchestratorConfiguration
         """
         try:
-            resp, body = self.client.get("./configuration")
+            resp, body = self.client.get("./configuration", **kwargs)
         except exceptions.ClientError:
             raise exceptions.InvalidUrlError(url=self.client.url)
 
