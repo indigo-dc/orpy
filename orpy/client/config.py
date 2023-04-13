@@ -32,11 +32,11 @@ class Config(object):
         """
         try:
             resp, body = self.client.get("./configuration")
-        except exceptions.ClientException:
-            raise exceptions.InvalidUrl(url=self.client.url)
+        except exceptions.ClientError:
+            raise exceptions.InvalidUrlError(url=self.client.url)
 
         if resp.status_code == 200:
             body["url"] = self.client.url
             return base.OrchestratorInfo(body)
         else:
-            raise exceptions.InvalidUrl(url=self.client.url)
+            raise exceptions.InvalidUrlError(url=self.client.url)

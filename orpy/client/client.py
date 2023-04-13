@@ -101,9 +101,9 @@ class OrpyClient(object):
         self.oidc_session = oidc_session
 
         if not any([oidc_agent, oidc_session, token]):
-            raise exceptions.InvalidUsage("Must pass either an oidc-agent "
-                                          "object, an oidc-session object "
-                                          "or an access token.")
+            raise exceptions.InvalidUsageError("Must pass either an oidc-agent "
+                                               "object, an oidc-session object "
+                                               "or an access token.")
         if [oidc_agent, oidc_session, token].count(None) < 2:
             msg = ("Using more than one of oidc-agent oidc-session and access "
                    "token means that only one of them will be used, check "
