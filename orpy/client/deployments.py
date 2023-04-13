@@ -68,7 +68,7 @@ class Deployments(object):
         :rtype: orpy.client.base.TOSCATemplate
         """
         resp, result = self.client.get("./deployments/%s/template/" % uuid, **kwargs)
-        info = {"template": result, "uuid": uuid}
+        info = {"template": result}
         return base.TOSCATemplate(info)
 
     def create(
