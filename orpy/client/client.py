@@ -94,7 +94,6 @@ class OrpyClient(object):
         :param str token: OpenID Connect access token to use for auth.
         :param bool debug: whether to enable debug logging
         """
-
         self.url = url + "/"
 
         self.set_authentication(token=token, agent=oidc_agent, session=oidc_session)
