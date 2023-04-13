@@ -14,12 +14,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+"""This module contains all the orpy exceptions."""
+
 import sys
 
 import six
 
 
-class ClientException(Exception):
+class ClientError(Exception):
     message = "An unknown exception occurred."
 
     def __init__(self, message=None, **kwargs):
@@ -38,34 +40,34 @@ class ClientException(Exception):
                 six.reraise(exc_info[0], exc_info[1], exc_info[2])
 
         message = "ERROR: " + message
-        super(ClientException, self).__init__(message)
+        super(ClientError, self).__init__(message)
 
 
-class AuthException(ClientException):
+class AuthError(ClientError):
     message = ("An exception has happened while obtaining an access token"
                " (err: %(err)s)")
 
 
-class InvalidUsage(ClientException):
+class InvalidUsageError(ClientError):
     message = "Invalid client usage"
 
 
-class InvalidUrl(ClientException):
+class InvalidUrlError(ClientError):
     message = "URL provided is not a valid orchestrator (%(url)s)"
 
 
-class RetryAfterException(ClientException):
-    """Base class for ClientExceptions that use Retry-After header."""
+class RetryAfterExceptionError(ClientError):
+    """Base class for ClientErrors that use Retry-After header."""
     def __init__(self, *args, **kwargs):
         try:
             self.retry_after = int(kwargs.pop('retry_after'))
         except (KeyError, ValueError):
             self.retry_after = 0
 
-        super(RetryAfterException, self).__init__(*args, **kwargs)
+        super(RetryAfterExceptionError, self).__init__(*args, **kwargs)
 
 
-class BadRequest(ClientException):
+class BadRequestError(ClientError):
     """HTTP 400 - Bad request.
 
     You sent some malformed data.
@@ -74,49 +76,49 @@ class BadRequest(ClientException):
     message = "Bad request"
 
 
-class Unauthorized(ClientException):
-    """HTTP 401 - Unauthorized.
+class UnauthorizedError(ClientError):
+    """HTTP 401 - UnauthorizedError.
 
     Bad credentials.
     """
     http_status = 401
-    message = "Unauthorized"
+    message = "UnauthorizedError"
 
 
-class Forbidden(ClientException):
-    """HTTP 403 - Forbidden.
+class ForbiddenError(ClientError):
+    """HTTP 403 - ForbiddenError.
 
     Your credentials don't give you access to this resource.
     """
     http_status = 403
-    message = "Forbidden"
+    message = "ForbiddenError"
 
 
-class NotFound(ClientException):
+class NotFoundError(ClientError):
     """HTTP 404 - Not found."""
     http_status = 404
     message = "Not found"
 
 
-class MethodNotAllowed(ClientException):
+class MethodNotAllowedError(ClientError):
     """HTTP 405 - Method Not Allowed."""
     http_status = 405
     message = "Method Not Allowed"
 
 
-class NotAcceptable(ClientException):
+class NotAcceptableError(ClientError):
     """HTTP 406 - Not Acceptable."""
     http_status = 406
     message = "Not Acceptable"
 
 
-class Conflict(ClientException):
-    """HTTP 409 - Conflict."""
+class ConflictError(ClientError):
+    """HTTP 409 - ConflictError."""
     http_status = 409
-    message = "Conflict"
+    message = "ConflictError"
 
 
-class OverLimit(RetryAfterException):
+class OverLimitError(RetryAfterExceptionError):
     """HTTP 413 - Over limit.
 
     You're over the API limits for this time period.
@@ -125,7 +127,7 @@ class OverLimit(RetryAfterException):
     message = "Over limit"
 
 
-class RateLimit(RetryAfterException):
+class RateLimitError(RetryAfterExceptionError):
     """HTTP 429 - Rate limit
 
     You've sent too many requests for this time period.
@@ -135,7 +137,7 @@ class RateLimit(RetryAfterException):
 
 
 # NotImplemented is a python keyword.
-class HTTPNotImplemented(ClientException):
+class HTTPNotImplementedErrorError(ClientError):
     """HTTP 501 - Not Implemented.
 
     The server does not support this operation.
@@ -147,17 +149,17 @@ class HTTPNotImplemented(ClientException):
 # In Python 2.4 Exception is old-style and thus doesn't have a __subclasses__()
 # so we can do this:
 #     _code_map = dict((c.http_status, c)
-#                      for c in ClientException.__subclasses__())
+#                      for c in ClientError.__subclasses__())
 #
 # Instead, we have to hardcode it:
-_error_classes = [BadRequest, Unauthorized, Forbidden, NotFound,
-                  MethodNotAllowed, NotAcceptable, Conflict, OverLimit,
-                  RateLimit, HTTPNotImplemented]
+_error_classes = [BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError,
+                  MethodNotAllowedError, NotAcceptableError, ConflictError,
+                  OverLimitError, RateLimitError, HTTPNotImplementedErrorError]
 _code_map = dict((c.http_status, c) for c in _error_classes)
 
 
 def from_response(response, body, url, method=None):
-    """Return an instance of ClientException or subclass based on a response.
+    """Return an instance of ClientError or subclass based on a response.
 
     Usage::
 
@@ -165,7 +167,7 @@ def from_response(response, body, url, method=None):
         if resp.status_code != 200:
             raise exception_from_response(resp, rest.text)
     """
-    cls = _code_map.get(response.status_code, ClientException)
+    cls = _code_map.get(response.status_code, ClientError)
 
     kwargs = {
         'code': response.status_code,
@@ -187,6 +189,9 @@ def from_response(response, body, url, method=None):
             if 'message' in body:
                 # WebOb 1.6.0 case
                 message = body.get('message')
+                details = body.get('details')
+            elif "title" in body:
+                message = body.get('title')
                 details = body.get('details')
             else:
                 # WebOb<1.6.0 where we assume there is a single error message

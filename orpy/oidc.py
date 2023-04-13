@@ -71,7 +71,7 @@ class OpenIDConnectAgent(object):
 
         token = json.loads(data)
         if token.get("status") == "failure":
-            raise exceptions.AuthException(err=token.get("error"))
+            raise exceptions.AuthError(err=token.get("error"))
         return token
 
 
@@ -97,7 +97,7 @@ class OpenIDConnectSession(object):
 
         if not (getattr(session, "token") and
                 isinstance(session.token, dict)):
-            raise exceptions.InvalidUsage("Session object is not valid")
+            raise exceptions.InvalidUsageError("Session object is not valid")
         self._session = session
 
     def get_token(self):
