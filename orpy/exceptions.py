@@ -34,7 +34,7 @@ class ClientError(Exception):
                 exc_info = sys.exc_info()
                 # kwargs doesn't match a variable in the message
                 # log the issue and the kwargs
-                print('Exception in string format operation')
+                print("Exception in string format operation")
                 for name, value in kwargs.iteritems():
                     print("%s: %s" % (name, value))
                 six.reraise(exc_info[0], exc_info[1], exc_info[2])
@@ -44,8 +44,9 @@ class ClientError(Exception):
 
 
 class AuthError(ClientError):
-    message = ("An exception has happened while obtaining an access token"
-               " (err: %(err)s)")
+    message = (
+        "An exception has happened while obtaining an access token" " (err: %(err)s)"
+    )
 
 
 class InvalidUsageError(ClientError):
@@ -58,9 +59,10 @@ class InvalidUrlError(ClientError):
 
 class RetryAfterExceptionError(ClientError):
     """Base class for ClientErrors that use Retry-After header."""
+
     def __init__(self, *args, **kwargs):
         try:
-            self.retry_after = int(kwargs.pop('retry_after'))
+            self.retry_after = int(kwargs.pop("retry_after"))
         except (KeyError, ValueError):
             self.retry_after = 0
 
@@ -72,6 +74,7 @@ class BadRequestError(ClientError):
 
     You sent some malformed data.
     """
+
     http_status = 400
     message = "Bad request"
 
@@ -81,6 +84,7 @@ class UnauthorizedError(ClientError):
 
     Bad credentials.
     """
+
     http_status = 401
     message = "UnauthorizedError"
 
@@ -90,30 +94,35 @@ class ForbiddenError(ClientError):
 
     Your credentials don't give you access to this resource.
     """
+
     http_status = 403
     message = "ForbiddenError"
 
 
 class NotFoundError(ClientError):
     """HTTP 404 - Not found."""
+
     http_status = 404
     message = "Not found"
 
 
 class MethodNotAllowedError(ClientError):
     """HTTP 405 - Method Not Allowed."""
+
     http_status = 405
     message = "Method Not Allowed"
 
 
 class NotAcceptableError(ClientError):
     """HTTP 406 - Not Acceptable."""
+
     http_status = 406
     message = "Not Acceptable"
 
 
 class ConflictError(ClientError):
     """HTTP 409 - ConflictError."""
+
     http_status = 409
     message = "ConflictError"
 
@@ -123,6 +132,7 @@ class OverLimitError(RetryAfterExceptionError):
 
     You're over the API limits for this time period.
     """
+
     http_status = 413
     message = "Over limit"
 
@@ -132,6 +142,7 @@ class RateLimitError(RetryAfterExceptionError):
 
     You've sent too many requests for this time period.
     """
+
     http_status = 429
     message = "Rate limit"
 
@@ -142,6 +153,7 @@ class HTTPNotImplementedErrorError(ClientError):
 
     The server does not support this operation.
     """
+
     http_status = 501
     message = "Not Implemented"
 
@@ -152,9 +164,18 @@ class HTTPNotImplementedErrorError(ClientError):
 #                      for c in ClientError.__subclasses__())
 #
 # Instead, we have to hardcode it:
-_error_classes = [BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError,
-                  MethodNotAllowedError, NotAcceptableError, ConflictError,
-                  OverLimitError, RateLimitError, HTTPNotImplementedErrorError]
+_error_classes = [
+    BadRequestError,
+    UnauthorizedError,
+    ForbiddenError,
+    NotFoundError,
+    MethodNotAllowedError,
+    NotAcceptableError,
+    ConflictError,
+    OverLimitError,
+    RateLimitError,
+    HTTPNotImplementedErrorError,
+]
 _code_map = dict((c.http_status, c) for c in _error_classes)
 
 
@@ -170,37 +191,37 @@ def from_response(response, body, url, method=None):
     cls = _code_map.get(response.status_code, ClientError)
 
     kwargs = {
-        'code': response.status_code,
-        'method': method,
-        'url': url,
-        'request_id': None,
+        "code": response.status_code,
+        "method": method,
+        "url": url,
+        "request_id": None,
     }
 
     if body:
         message = "n/a"
         details = "n/a"
 
-        if hasattr(body, 'keys'):
+        if hasattr(body, "keys"):
             # NOTE(mriedem): WebOb<1.6.0 will return a nested dict structure
             # where the error keys to the message/details/code. WebOb>=1.6.0
             # returns just a response body as a single dict, not nested,
             # so we have to handle both cases (since we can't trust what we're
             # given with content_type: application/json either way.
-            if 'message' in body:
+            if "message" in body:
                 # WebOb 1.6.0 case
-                message = body.get('message')
-                details = body.get('details')
+                message = body.get("message")
+                details = body.get("details")
             elif "title" in body:
-                message = body.get('title')
-                details = body.get('details')
+                message = body.get("title")
+                details = body.get("details")
             else:
                 # WebOb<1.6.0 where we assume there is a single error message
                 # key to the body that has the message and details.
                 error = body[list(body)[0]]
-                message = error.get('message')
-                details = error.get('details')
+                message = error.get("message")
+                details = error.get("details")
 
-        kwargs['message'] = message
-        kwargs['details'] = details
+        kwargs["message"] = message
+        kwargs["details"] = details
 
     return cls(**kwargs)

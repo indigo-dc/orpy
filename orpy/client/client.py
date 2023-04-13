@@ -35,7 +35,6 @@ from orpy import version
 
 
 class _JSONEncoder(json.JSONEncoder):
-
     def default(self, o):
         if isinstance(o, datetime.datetime):
             return o.isoformat()
@@ -48,8 +47,9 @@ class _JSONEncoder(json.JSONEncoder):
 class OrpyClient(object):
     """An INDIGO-DataCloud PaaS orchestrator client class."""
 
-    def __init__(self, url, oidc_agent=None, token=None, oidc_session=None,
-                 debug=False):
+    def __init__(
+        self, url, oidc_agent=None, token=None, oidc_session=None, debug=False
+    ):
         """Initialization of OrpyClient object.
 
         You MUST pass either:
@@ -101,13 +101,17 @@ class OrpyClient(object):
         self.oidc_session = oidc_session
 
         if not any([oidc_agent, oidc_session, token]):
-            raise exceptions.InvalidUsageError("Must pass either an oidc-agent "
-                                               "object, an oidc-session object "
-                                               "or an access token.")
+            raise exceptions.InvalidUsageError(
+                "Must pass either an oidc-agent "
+                "object, an oidc-session object "
+                "or an access token."
+            )
         if [oidc_agent, oidc_session, token].count(None) < 2:
-            msg = ("Using more than one of oidc-agent oidc-session and access "
-                   "token means that only one of them will be used, check "
-                   "documentation.")
+            msg = (
+                "Using more than one of oidc-agent oidc-session and access "
+                "token means that only one of them will be used, check "
+                "documentation."
+            )
             warnings.warn(msg, RuntimeWarning)
 
         self.http_debug = debug
@@ -124,7 +128,7 @@ class OrpyClient(object):
             ch = logging.StreamHandler()
             self._logger.addHandler(ch)
             self._logger.propagate = False
-            if hasattr(requests, 'logging'):
+            if hasattr(requests, "logging"):
                 rql = requests.logging.getLogger(requests.__name__)
                 rql.addHandler(ch)
                 # Since we have already setup the root logger on debug, we
@@ -209,7 +213,7 @@ class OrpyClient(object):
 
         method = method.lower()
 
-        kwargs.setdefault('headers', kwargs.get('headers', {}))
+        kwargs.setdefault("headers", kwargs.get("headers", {}))
 
         kwargs["headers"]["User-Agent"] = "orpy-%s" % version.user_agent
         kwargs["headers"]["Accept"] = "application/json"
@@ -218,8 +222,8 @@ class OrpyClient(object):
             kwargs["headers"]["Authorization"] = "Bearer" + self.token
 
         if payload is not None:
-            kwargs["headers"].setdefault('Content-Type', 'application/json')
-            kwargs['data'] = self._json.encode(payload)
+            kwargs["headers"].setdefault("Content-Type", "application/json")
+            kwargs["data"] = self._json.encode(payload)
 
         url = parse.urljoin(self.url, url)
 
@@ -270,16 +274,16 @@ class OrpyClient(object):
         if not self.http_debug:
             return
 
-        string_parts = ['curl -g -i']
+        string_parts = ["curl -g -i"]
 
-        if not kwargs.get('verify', True):
-            string_parts.append(' --insecure')
+        if not kwargs.get("verify", True):
+            string_parts.append(" --insecure")
 
         string_parts.append(" '%s'" % url)
-        string_parts.append(' -X %s' % method)
+        string_parts.append(" -X %s" % method)
 
-        headers = copy.deepcopy(kwargs['headers'])
-        self._redact(headers, ['Authorization'])
+        headers = copy.deepcopy(kwargs["headers"])
+        self._redact(headers, ["Authorization"])
         # because dict ordering changes from 2 to 3
         keys = sorted(headers.keys())
         for name in keys:
@@ -287,8 +291,8 @@ class OrpyClient(object):
             header = ' -H "%s: %s"' % (name, value)
             string_parts.append(header)
 
-        if 'data' in kwargs:
-            data = json.loads(kwargs['data'])
+        if "data" in kwargs:
+            data = json.loads(kwargs["data"])
             string_parts.append(" -d '%s'" % json.dumps(data))
         self._logger.debug("REQ: %s" % "".join(string_parts))
 
@@ -299,16 +303,20 @@ class OrpyClient(object):
         if resp.text and resp.status_code != 400:
             try:
                 body = json.loads(resp.text)
-                self._redact(body, ['access', 'token', 'id'])
+                self._redact(body, ["access", "token", "id"])
             except ValueError:
                 body = None
         else:
             body = None
 
-        self._logger.debug("RESP: [%(status)s] %(headers)s\nRESP BODY: "
-                           "%(text)s\n", {'status': resp.status_code,
-                                          'headers': resp.headers,
-                                          'text': json.dumps(body)})
+        self._logger.debug(
+            "RESP: [%(status)s] %(headers)s\nRESP BODY: " "%(text)s\n",
+            {
+                "status": resp.status_code,
+                "headers": resp.headers,
+                "text": json.dumps(body),
+            },
+        )
 
     def _redact(self, target, path, text=None):
         """Replace the value of a key in `target`.
@@ -342,7 +350,7 @@ class OrpyClient(object):
                 target[key] = text
             elif target[key] is not None:
                 # because in python3 byte string handling is ... ug
-                value = target[key].encode('utf-8')
+                value = target[key].encode("utf-8")
                 sha1sum = hashlib.sha1(value)  # nosec
                 target[key] = "{SHA1}%s" % sha1sum.hexdigest()
 
@@ -351,39 +359,39 @@ class OrpyClient(object):
 
         This calls :py:meth:`.request()` with ``method`` set to ``HEAD``.
         """
-        return self.request(url, 'HEAD', **kwargs)
+        return self.request(url, "HEAD", **kwargs)
 
     def get(self, url, **kwargs):
         """Perform a GET request.
 
         This calls :py:meth:`.request()` with ``method`` set to ``GET``.
         """
-        return self.request(url, 'GET', **kwargs)
+        return self.request(url, "GET", **kwargs)
 
     def post(self, url, **kwargs):
         """Perform a POST request.
 
         This calls :py:meth:`.request()` with ``method`` set to ``POST``.
         """
-        return self.request(url, 'POST', **kwargs)
+        return self.request(url, "POST", **kwargs)
 
     def put(self, url, **kwargs):
         """Perform a PUT request.
 
         This calls :py:meth:`.request()` with ``method`` set to ``PUT``.
         """
-        return self.request(url, 'PUT', **kwargs)
+        return self.request(url, "PUT", **kwargs)
 
     def delete(self, url, **kwargs):
         """Perform a DELETE request.
 
         This calls :py:meth:`.request()` with ``method`` set to ``DELETE``.
         """
-        return self.request(url, 'DELETE', **kwargs)
+        return self.request(url, "DELETE", **kwargs)
 
     def patch(self, url, **kwargs):
         """Perform a PATCH request.
 
         This calls :py:meth:`.request()` with ``method`` set to ``PATCH``.
         """
-        return self.request(url, 'PATCH', **kwargs)
+        return self.request(url, "PATCH", **kwargs)

@@ -64,8 +64,9 @@ class OpenIDConnectAgent(object):
                 else:
                     break
         except socket.error as err:
-            raise exceptions.AuthExceptiob(err="Cannot communicate with the "
-                                               "oidc-agent: %s" % err)
+            raise exceptions.AuthExceptiob(
+                err="Cannot communicate with the " "oidc-agent: %s" % err
+            )
         finally:
             self._sock.close()
 
@@ -95,8 +96,7 @@ class OpenIDConnectSession(object):
                         attribute where we will obtain the access token.
         """
 
-        if not (getattr(session, "token") and
-                isinstance(session.token, dict)):
+        if not (getattr(session, "token") and isinstance(session.token, dict)):
             raise exceptions.InvalidUsageError("Session object is not valid")
         self._session = session
 

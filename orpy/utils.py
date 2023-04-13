@@ -29,7 +29,7 @@ def env(*vars, **kwargs):
         value = os.environ.get(v, None)
         if value:
             return value
-    return kwargs.get('default', '')
+    return kwargs.get("default", "")
 
 
 def get_item_properties(item, fields, mixed_case_fields=None):
@@ -46,11 +46,11 @@ def get_item_properties(item, fields, mixed_case_fields=None):
 
     for field in fields:
         if field in mixed_case_fields:
-            field_name = field.replace(' ', '')
+            field_name = field.replace(" ", "")
         else:
-            field_name = field.lower().replace(' ', '')
+            field_name = field.lower().replace(" ", "")
 
-        data = getattr(item, field_name, '')
+        data = getattr(item, field_name, "")
         if isinstance(data, dict):
             data = format_dict(data)
 
