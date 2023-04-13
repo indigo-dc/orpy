@@ -23,6 +23,5 @@ from orpy.tests import base
 
 
 class TestOrpy(base.TestCase):
-
     def test_something(self):
         pass

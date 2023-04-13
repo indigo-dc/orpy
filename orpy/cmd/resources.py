@@ -25,26 +25,27 @@ class ResourcesList(lister.Lister):
 
     def get_parser(self, prog_name):
         parser = super(ResourcesList, self).get_parser(prog_name)
-        parser.add_argument('uuid',
-                            metavar="<deployment uuid>",
-                            help="Deployment UUID to show.")
+        parser.add_argument(
+            "uuid", metavar="<deployment uuid>", help="Deployment UUID to show."
+        )
         return parser
 
     def take_action(self, parsed_args):
         ret = self.app.client.resources.list(parsed_args.uuid)
 
         columns = (
-            'uuid',
-            'state',
-            'toscaNodeType',
-            'toscaNodeName',
-            'creationTime',
-            'requiredBy',
+            "uuid",
+            "state",
+            "toscaNodeType",
+            "toscaNodeName",
+            "creationTime",
+            "requiredBy",
         )
 
-        values = [utils.get_item_properties(s, columns,
-                                            mixed_case_fields=columns)
-                  for s in ret]
+        values = [
+            utils.get_item_properties(s, columns, mixed_case_fields=columns)
+            for s in ret
+        ]
 
         return columns, values
 
@@ -54,17 +55,20 @@ class ResourcesShow(show.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(ResourcesShow, self).get_parser(prog_name)
-        parser.add_argument('deployment_uuid',
-                            metavar="<deployment uuid>",
-                            help="Deployment UUID for the resource.")
+        parser.add_argument(
+            "deployment_uuid",
+            metavar="<deployment uuid>",
+            help="Deployment UUID for the resource.",
+        )
 
-        parser.add_argument('resource_uuid',
-                            metavar="<resource uuid>",
-                            help="Resource UUID to show.")
+        parser.add_argument(
+            "resource_uuid", metavar="<resource uuid>", help="Resource UUID to show."
+        )
         return parser
 
     def take_action(self, parsed_args):
-        d = self.app.client.resources.show(parsed_args.deployment_uuid,
-                                           parsed_args.resource_uuid).to_dict()
+        d = self.app.client.resources.show(
+            parsed_args.deployment_uuid, parsed_args.resource_uuid
+        ).to_dict()
         d.pop("links")
         return self.dict2columns(d)

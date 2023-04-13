@@ -37,6 +37,7 @@ class OrpyApp(app.App):
     token into the ORCHESTRATOR_TOKEN environment variable, so that we can use
     this token for authentication.
     """
+
     commands = []
 
     def __init__(self):
@@ -52,7 +53,7 @@ class OrpyApp(app.App):
         help.HelpCommand.auth_required = False
         complete.CompleteCommand.auth_required = False
 
-        cm = commandmanager.CommandManager('orpy.cli')
+        cm = commandmanager.CommandManager("orpy.cli")
         super(OrpyApp, self).__init__(
             description="Command line client for the INDIGO PaaS Orchestrator",
             version=version.__version__,
@@ -69,37 +70,43 @@ class OrpyApp(app.App):
             return
 
         if not self.options.orchestrator_url:
-            self.parser.error("No URL for the orchestrator has been suplied "
-                              "use --url or set the ORCHESTRATOR_URL "
-                              "environment variable.")
+            self.parser.error(
+                "No URL for the orchestrator has been suplied "
+                "use --url or set the ORCHESTRATOR_URL "
+                "environment variable."
+            )
 
         if not cmd.auth_required:
             return
 
-        if (not all([self.options.oidc_agent_sock,
-                     self.options.oidc_agent_account])) and not self.token:
+        if (
+            not all([self.options.oidc_agent_sock, self.options.oidc_agent_account])
+        ) and not self.token:
 
-            self.parser.error("No oidc-agent has been set up or no access "
-                              "token has been provided, please set the "
-                              "ORCHESTRATOR_TOKEN environment variable or "
-                              "set up an oidc-agent "
-                              "(see '%s help' for more details on how "
-                              "to set up authentication)" %
-                              self.parser.prog)
+            self.parser.error(
+                "No oidc-agent has been set up or no access "
+                "token has been provided, please set the "
+                "ORCHESTRATOR_TOKEN environment variable or "
+                "set up an oidc-agent "
+                "(see '%s help' for more details on how "
+                "to set up authentication)" % self.parser.prog
+            )
 
         self.token = utils.env("ORCHESTRATOR_TOKEN")
 
         if self.options.oidc_agent_sock and self.options.oidc_agent_account:
             self.oidc_agent = oidc.OpenIDConnectAgent(
                 self.options.oidc_agent_account,
-                socket_path=self.options.oidc_agent_sock
+                socket_path=self.options.oidc_agent_sock,
             )
 
         if self.client is None:
-            self.client = client.OrpyClient(self.options.orchestrator_url,
-                                            oidc_agent=self.oidc_agent,
-                                            token=self.token,
-                                            debug=self.options.debug)
+            self.client = client.OrpyClient(
+                self.options.orchestrator_url,
+                oidc_agent=self.oidc_agent,
+                token=self.token,
+                debug=self.options.debug,
+            )
 
     def build_option_parser(self, description, version):
         auth_help = """Authentication:
@@ -131,38 +138,39 @@ class OrpyApp(app.App):
             argparse_kwargs={
                 "formatter_class": argparse.RawDescriptionHelpFormatter,
                 "epilog": auth_help,
-            })
+            },
+        )
 
         parser.add_argument(
-            '--oidc-agent-sock',
-            metavar='<oidc-agent-socket>',
-            dest='oidc_agent_sock',
-            default=utils.env('OIDC_SOCK'),
-            help='The path for the oidc-agent socket to use to get and renew '
-                 'access tokens from the OpenID Connect provider. This '
-                 'defaults to the OIDC_SOCK environment variable, that should '
-                 'be automatically set up if you are using oidc-agent. '
-                 'In order to use the oidc-agent you must also pass the '
-                 '--oidc-agent-account parameter, or set the OIDC_ACCOUNT '
-                 'environment variable.'
+            "--oidc-agent-sock",
+            metavar="<oidc-agent-socket>",
+            dest="oidc_agent_sock",
+            default=utils.env("OIDC_SOCK"),
+            help="The path for the oidc-agent socket to use to get and renew "
+            "access tokens from the OpenID Connect provider. This "
+            "defaults to the OIDC_SOCK environment variable, that should "
+            "be automatically set up if you are using oidc-agent. "
+            "In order to use the oidc-agent you must also pass the "
+            "--oidc-agent-account parameter, or set the OIDC_ACCOUNT "
+            "environment variable.",
         )
         parser.add_argument(
-            '--oidc-agent-account',
-            metavar='<oidc-agent-account>',
-            dest='oidc_agent_account',
-            default=utils.env('OIDC_ACCOUNT'),
-            help='The oidc-agent account that we will use to get tokens from. '
-                 'In order to use the oidc-agent you must pass thos parameter '
-                 'or set the OIDC_ACCOUNT environment variable.'
+            "--oidc-agent-account",
+            metavar="<oidc-agent-account>",
+            dest="oidc_agent_account",
+            default=utils.env("OIDC_ACCOUNT"),
+            help="The oidc-agent account that we will use to get tokens from. "
+            "In order to use the oidc-agent you must pass thos parameter "
+            "or set the OIDC_ACCOUNT environment variable.",
         )
         parser.add_argument(
-            '--url',
-            metavar='<orchestrator-url>',
-            dest='orchestrator_url',
-            default=utils.env('ORCHESTRATOR_URL'),
-            help='The base url of the orchestrator rest interface. '
-                 'Alternative the environment variable ORCHESTRATOR_URL '
-                 'can be used.'
+            "--url",
+            metavar="<orchestrator-url>",
+            dest="orchestrator_url",
+            default=utils.env("ORCHESTRATOR_URL"),
+            help="The base url of the orchestrator rest interface. "
+            "Alternative the environment variable ORCHESTRATOR_URL "
+            "can be used.",
         )
 
         return parser

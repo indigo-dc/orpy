@@ -35,9 +35,9 @@ class KeyValueAction(argparse.Action):
             setattr(namespace, self.dest, {})
 
         for v in values:
-            v = v.split('=', 1)
+            v = v.split("=", 1)
             # NOTE(qtang): Prevent null key setting in property
-            if '' == v[0]:
+            if "" == v[0]:
                 msg = "Property key must be specified: %s"
                 raise argparse.ArgumentTypeError(msg % str(values))
             else:
@@ -53,17 +53,18 @@ class DeploymentList(lister.Lister):
         ret = self.app.client.deployments.list()
 
         columns = (
-            'uuid',
-            'status',
-            'task',
-            'creationTime',
-            'createdBy',
-            'cloudProviderName'
+            "uuid",
+            "status",
+            "task",
+            "creationTime",
+            "createdBy",
+            "cloudProviderName",
         )
 
-        values = [utils.get_item_properties(s, columns,
-                                            mixed_case_fields=columns)
-                  for s in ret]
+        values = [
+            utils.get_item_properties(s, columns, mixed_case_fields=columns)
+            for s in ret
+        ]
 
         return columns, values
 
@@ -73,13 +74,16 @@ class DeploymentShow(show.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(DeploymentShow, self).get_parser(prog_name)
-        parser.add_argument('uuid',
-                            metavar="<deployment uuid>",
-                            help="Deployment UUID to show.")
-        parser.add_argument('-l', '--long',
-                            action="store_true",
-                            default=False,
-                            help="Show additional fields in output.")
+        parser.add_argument(
+            "uuid", metavar="<deployment uuid>", help="Deployment UUID to show."
+        )
+        parser.add_argument(
+            "-l",
+            "--long",
+            action="store_true",
+            default=False,
+            help="Show additional fields in output.",
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -103,9 +107,7 @@ class DeploymentShow(show.ShowOne):
                 links[i["rel"]] = i["href"]
 
             d["links"] = utils.format_dict(links)
-            d["cloudProviderEndpoint"] = utils.format_dict(
-                d["cloudProviderEndpoint"]
-            )
+            d["cloudProviderEndpoint"] = utils.format_dict(d["cloudProviderEndpoint"])
             d["createdBy"] = utils.format_dict(d["createdBy"])
 
         return self.dict2columns({k: v for k, v in d.items() if k not in rm})
@@ -116,9 +118,9 @@ class DeploymentDelete(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(DeploymentDelete, self).get_parser(prog_name)
-        parser.add_argument('uuid',
-                            metavar="<deployment uuid>",
-                            help="Deployment UUID to delete.")
+        parser.add_argument(
+            "uuid", metavar="<deployment uuid>", help="Deployment UUID to delete."
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -130,9 +132,11 @@ class DeploymentGetTemplate(show.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(DeploymentGetTemplate, self).get_parser(prog_name)
-        parser.add_argument('uuid',
-                            metavar="<deployment uuid>",
-                            help="Deployment UUID to get template for.")
+        parser.add_argument(
+            "uuid",
+            metavar="<deployment uuid>",
+            help="Deployment UUID to get template for.",
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -146,36 +150,41 @@ class DeploymentCreate(show.ShowOne):
     def get_parser(self, prog_name):
         parser = super(DeploymentCreate, self).get_parser(prog_name)
 
-        parser.add_argument("--callback-url",
-                            dest="callback",
-                            default=None,
-                            help="The callback url.")
-        parser.add_argument("--max-providers-retry",
-                            dest="max_retries",
-                            default=None,
-                            type=int,
-                            help="Maximum number of cloud providers to be "
-                                 "used in case of failure (Default is to "
-                                 "be unbounded).")
-        parser.add_argument("--keep-last-attempt",
-                            dest="keep_last",
-                            default=True,
-                            type=bool,
-                            help="In case of failure, keep the resources "
-                                 "allocated in the last try (Default: True, "
-                                 "accepts boolean values).")
+        parser.add_argument(
+            "--callback-url", dest="callback", default=None, help="The callback url."
+        )
+        parser.add_argument(
+            "--max-providers-retry",
+            dest="max_retries",
+            default=None,
+            type=int,
+            help="Maximum number of cloud providers to be "
+            "used in case of failure (Default is to "
+            "be unbounded).",
+        )
+        parser.add_argument(
+            "--keep-last-attempt",
+            dest="keep_last",
+            default=True,
+            type=bool,
+            help="In case of failure, keep the resources "
+            "allocated in the last try (Default: True, "
+            "accepts boolean values).",
+        )
 
-        parser.add_argument('filename',
-                            metavar="<template file>",
-                            help="TOSCA template file.")
+        parser.add_argument(
+            "filename", metavar="<template file>", help="TOSCA template file."
+        )
 
-        parser.add_argument('parameters',
-                            metavar="<parameter>=<value>",
-                            nargs="*",
-                            action=KeyValueAction,
-                            help="Input parameter for the deployment in the "
-                                 "form <parameter>=<value>. Can be specified "
-                                 "several times.")
+        parser.add_argument(
+            "parameters",
+            metavar="<parameter>=<value>",
+            nargs="*",
+            action=KeyValueAction,
+            help="Input parameter for the deployment in the "
+            "form <parameter>=<value>. Can be specified "
+            "several times.",
+        )
 
         return parser
 
@@ -186,7 +195,7 @@ class DeploymentCreate(show.ShowOne):
                 callback_url=parsed_args.callback,
                 max_providers_retry=parsed_args.max_retries,
                 keep_last_attemp=parsed_args.keep_last,
-                parameters=parsed_args.parameters
+                parameters=parsed_args.parameters,
             )
         return self.dict2columns(d.to_dict())
 
@@ -197,38 +206,43 @@ class DeploymentUpdate(show.ShowOne):
     def get_parser(self, prog_name):
         parser = super(DeploymentUpdate, self).get_parser(prog_name)
 
-        parser.add_argument("--callback-url",
-                            dest="callback",
-                            default=None,
-                            help="The callback url.")
-        parser.add_argument("--max-providers-retry",
-                            dest="max_retries",
-                            default=None,
-                            type=int,
-                            help="Maximum number of cloud providers to be "
-                                 "used in case of failure (Default is to "
-                                 "be unbounded).")
-        parser.add_argument("--keep-last-attempt",
-                            dest="keep_last",
-                            default=True,
-                            type=bool,
-                            help="In case of failure, keep the resources "
-                                 "allocated in the last try (Default: True, "
-                                 "accepts boolean values).")
+        parser.add_argument(
+            "--callback-url", dest="callback", default=None, help="The callback url."
+        )
+        parser.add_argument(
+            "--max-providers-retry",
+            dest="max_retries",
+            default=None,
+            type=int,
+            help="Maximum number of cloud providers to be "
+            "used in case of failure (Default is to "
+            "be unbounded).",
+        )
+        parser.add_argument(
+            "--keep-last-attempt",
+            dest="keep_last",
+            default=True,
+            type=bool,
+            help="In case of failure, keep the resources "
+            "allocated in the last try (Default: True, "
+            "accepts boolean values).",
+        )
 
-        parser.add_argument('uuid',
-                            metavar="<deployment uuid>",
-                            help="Deployment UUID to update.")
-        parser.add_argument('filename',
-                            metavar="<template file>",
-                            help="TOSCA template file.")
-        parser.add_argument('parameters',
-                            metavar="<parameter>=<value>",
-                            nargs="*",
-                            action=KeyValueAction,
-                            help="Input parameter for the deployment in the "
-                                 "form <parameter>=<value>. Can be specified "
-                                 "several times.")
+        parser.add_argument(
+            "uuid", metavar="<deployment uuid>", help="Deployment UUID to update."
+        )
+        parser.add_argument(
+            "filename", metavar="<template file>", help="TOSCA template file."
+        )
+        parser.add_argument(
+            "parameters",
+            metavar="<parameter>=<value>",
+            nargs="*",
+            action=KeyValueAction,
+            help="Input parameter for the deployment in the "
+            "form <parameter>=<value>. Can be specified "
+            "several times.",
+        )
         return parser
 
     def take_action(self, parsed_args):
@@ -239,6 +253,6 @@ class DeploymentUpdate(show.ShowOne):
                 callback_url=parsed_args.callback,
                 max_providers_retry=parsed_args.max_retries,
                 keep_last_attemp=parsed_args.keep_last,
-                parameters=parsed_args.parameters
+                parameters=parsed_args.parameters,
             )
         return self.dict2columns(d.to_dict())

@@ -63,12 +63,17 @@ class Deployments(object):
         :rtype: orpy.client.base.TOSCATemplate
         """
         resp, result = self.client.get("./deployments/%s/template/" % uuid)
-        info = {"template": result,
-                "uuid": uuid}
+        info = {"template": result, "uuid": uuid}
         return base.TOSCATemplate(info)
 
-    def create(self, template, callback_url=None, max_providers_retry=None,
-               keep_last_attemp=True, parameters={}):
+    def create(
+        self,
+        template,
+        callback_url=None,
+        max_providers_retry=None,
+        keep_last_attemp=True,
+        parameters={},
+    ):
         """Create a deployment.
 
         :param str template: The TOSCA template to use.
@@ -90,13 +95,18 @@ class Deployments(object):
         if max_providers_retry:
             json["maxProvidersRetry"] = max_providers_retry
 
-        resp, result = self.client.post("./deployments/",
-                                        json=json)
+        resp, result = self.client.post("./deployments/", json=json)
         return base.Deployment(result)
 
-    def update(self, uuid, template, callback_url=None,
-               max_providers_retry=None, keep_last_attemp=True,
-               parameters={}):
+    def update(
+        self,
+        uuid,
+        template,
+        callback_url=None,
+        max_providers_retry=None,
+        keep_last_attemp=True,
+        parameters={},
+    ):
         """Update a deployment.
 
         :param str uuid: The UUID of the deployment.
@@ -119,6 +129,5 @@ class Deployments(object):
         if max_providers_retry:
             json["maxProvidersRetry"] = max_providers_retry
 
-        resp, result = self.client.put("./deployments/%s" % uuid,
-                                       json=json)
+        resp, result = self.client.put("./deployments/%s" % uuid, json=json)
         return base.Deployment(result)

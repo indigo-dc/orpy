@@ -31,9 +31,7 @@ class BaseObject(object):
         self.uuid = info.get("uuid", None)
 
     def __repr__(self):
-        reprkeys = sorted(k
-                          for k in self.__dict__.keys()
-                          if k[0] != '_')
+        reprkeys = sorted(k for k in self.__dict__.keys() if k[0] != "_")
         info = ", ".join("%s=%s" % (k, getattr(self, k)) for k in reprkeys)
         return "<%s %s>" % (self.__class__.__name__, info)
 
@@ -58,7 +56,7 @@ class BaseObject(object):
         # two resources of different types are not equal
         if not isinstance(other, self.__class__):
             return False
-        if hasattr(self, 'id') and hasattr(other, 'id'):
+        if hasattr(self, "id") and hasattr(other, "id"):
             return self.id == other.id
         return self._info == other._info
 
@@ -92,24 +90,29 @@ class BaseObject(object):
 
 class Deployment(BaseObject):
     """Object that represents a deployment."""
+
     pass
 
 
 class Resource(BaseObject):
     """Object that represents a Resource."""
+
     pass
 
 
 class TOSCATemplate(BaseObject):
     """Object that repesents a TOSCA template."""
+
     pass
 
 
 class OrchestratorInfo(BaseObject):
     """Object that represents the Orchestrtor information."""
+
     pass
 
 
 class OrchestratorConfiguration(BaseObject):
     """Object that represents the Orchestrtor information."""
+
     pass

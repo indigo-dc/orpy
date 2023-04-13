@@ -43,6 +43,7 @@ class Resources(object):
         :return: The resource requested
         :rtype: orpy.client.base.Resource
         """
-        resp, result = self.client.get("./deployments/%s/resources/%s" %
-                                       (deployment_uuid, resource_uuid))
+        resp, result = self.client.get(
+            "./deployments/%s/resources/%s" % (deployment_uuid, resource_uuid)
+        )
         return base.Resource(result)
