@@ -77,7 +77,7 @@ class Deployments(object):
         callback_url=None,
         max_providers_retry=None,
         keep_last_attemp=True,
-        parameters={},
+        parameters=None,
         **kwargs,
     ):
         """Create a deployment.
@@ -95,7 +95,7 @@ class Deployments(object):
         json = {
             "template": template,
             "keepLastAttemp": keep_last_attemp,
-            "parameters": parameters,
+            "parameters": parameters or {},
         }
         if callback_url:
             json["callback"] = callback_url
@@ -112,7 +112,7 @@ class Deployments(object):
         callback_url=None,
         max_providers_retry=None,
         keep_last_attemp=True,
-        parameters={},
+        parameters=None,
         **kwargs,
     ):
         """Update a deployment.
@@ -131,7 +131,7 @@ class Deployments(object):
         json = {
             "template": template,
             "keepLastAttemp": keep_last_attemp,
-            "parameters": parameters,
+            "parameters": parameters or {},
         }
         if callback_url:
             json["callback"] = callback_url
