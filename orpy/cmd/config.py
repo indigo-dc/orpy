@@ -27,10 +27,10 @@ class OrchestratorConfigShow(show.ShowOne):
     is using.
     """
 
-    auth_required = False
+    auth_required = True
 
     def take_action(self, parsed_args):
-        d = self.app.client.config.get().to_dict()
+        d = self.app.client.config.get(authenticated=self.auth_required).to_dict()
         for k, v in d.items():
             if isinstance(v, dict):
                 d[k] = utils.format_dict(v)

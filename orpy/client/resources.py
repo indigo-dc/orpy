@@ -23,27 +23,29 @@ class Resources(object):
     def __init__(self, client):
         self.client = client
 
-    def list(self, uuid):
+    def list(self, uuid, **kwargs):
         """List resources for a deployment.
 
         :param str uuid: The UUID of the deployment get the resources.
+        :param kwargs: Other arguments passed to the request client.
 
         :return: A list of orpy.client.base.Resource
         :rtype: list
         """
-        resp, results = self.client.get("./deployments/%s/resources/" % uuid)
+        resp, results = self.client.get("./deployments/%s/resources/" % uuid, **kwargs)
         return [base.Resource(result) for result in results]
 
-    def show(self, deployment_uuid, resource_uuid):
+    def show(self, deployment_uuid, resource_uuid, **kwargs):
         """Show details about a resource on a deployment.
 
         :param str resource_uuid: The UUID of the deployment get the resource.
         :param str deployment_uuid: The UUID of the resource.
+        :param kwargs: Other arguments passed to the request client.
 
         :return: The resource requested
         :rtype: orpy.client.base.Resource
         """
         resp, result = self.client.get(
-            "./deployments/%s/resources/%s" % (deployment_uuid, resource_uuid)
+            "./deployments/%s/resources/%s" % (deployment_uuid, resource_uuid), **kwargs
         )
         return base.Resource(result)

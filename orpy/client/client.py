@@ -96,23 +96,8 @@ class OrpyClient(object):
         """
 
         self.url = url + "/"
-        self._token = token
-        self.oidc_agent = oidc_agent
-        self.oidc_session = oidc_session
 
-        if not any([oidc_agent, oidc_session, token]):
-            raise exceptions.InvalidUsageError(
-                "Must pass either an oidc-agent "
-                "object, an oidc-session object "
-                "or an access token."
-            )
-        if [oidc_agent, oidc_session, token].count(None) < 2:
-            msg = (
-                "Using more than one of oidc-agent oidc-session and access "
-                "token means that only one of them will be used, check "
-                "documentation."
-            )
-            warnings.warn(msg, RuntimeWarning)
+        self.set_authentication(token=token, agent=oidc_agent, session=oidc_session)
 
         self.http_debug = debug
 
@@ -139,8 +124,37 @@ class OrpyClient(object):
         self._json = _JSONEncoder()
         self.session = requests.Session()
 
+    def set_authentication(self, token=None, agent=None, session=None):
+        self._token = token
+        self.oidc_agent = agent
+        self.oidc_session = session
+
+        if [agent, session, token].count(None) < 2:
+            msg = (
+                "Using more than one of oidc-agent oidc-session and access "
+                "token means that only one of them will be used, check "
+                "documentation. "
+                f"token: -{token}- "
+                f"agent: -{agent}- "
+                f"session: -{session}- "
+            )
+            warnings.warn(msg, RuntimeWarning)
+
+    def _check_auth(self):
+        token = self._token
+        oidc_agent = self.oidc_agent
+        oidc_session = self.oidc_session
+
+        if not any([oidc_agent, oidc_session, token]):
+            raise exceptions.InvalidUsageError(
+                "Authentication is not correctly setup. You must pass either an "
+                "oidc-agent object, an oidc-session object or an access token."
+            )
+
     @property
     def token(self):
+        self._check_auth()
+
         token = self._token
         if self.oidc_agent is not None:
             token = self.oidc_agent.get_token()["access_token"]
@@ -184,7 +198,7 @@ class OrpyClient(object):
         """
         return self._info
 
-    def request(self, url, method, payload=None, **kwargs):
+    def request(self, url, method, authenticated=True, payload=None, **kwargs):
         """Send an HTTP request with the specified characteristics.
 
         Wrapper around `requests.Session.request` to handle tasks such as
@@ -198,6 +212,7 @@ class OrpyClient(object):
                         with the attribute self.url. If a fully qualified URL
                         is provided then self.url will be ignored.
         :param str method: The http method to use. (e.g. 'GET', 'POST')
+        :param bool authenticated: Whether the request must be authenticated or not.
         :param payload: Some data to be represented as JSON. (optional)
         :param kwargs: any other parameter that can be passed to
                        :meth:`requests.Session.request` (such as `headers`).
@@ -218,7 +233,7 @@ class OrpyClient(object):
         kwargs["headers"]["User-Agent"] = "orpy-%s" % version.user_agent
         kwargs["headers"]["Accept"] = "application/json"
 
-        if self.token is not None:
+        if authenticated and self.token is not None:
             kwargs["headers"]["Authorization"] = "Bearer" + self.token
 
         if payload is not None:

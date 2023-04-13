@@ -24,14 +24,16 @@ class Info(object):
     def __init__(self, client):
         self.client = client
 
-    def get(self):
+    def get(self, **kwargs):
         """Get information about the Orchestrator.
+
+        :param kwargs: Other arguments passed to the request client.
 
         :return: Information about the orchestrator.
         :rtype: orpy.client.base.OrchestratorInfo
         """
         try:
-            resp, body = self.client.get("./info")
+            resp, body = self.client.get("./info", **kwargs)
         except exceptions.ClientError:
             raise exceptions.InvalidUrlError(url=self.client.url)
 
