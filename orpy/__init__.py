@@ -12,6 +12,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+"""orpy is an INDIGO-PaaS orchestrator client."""
+
 import pbr.version
 
 

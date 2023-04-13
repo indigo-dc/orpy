@@ -22,9 +22,12 @@ import six
 
 
 class ClientError(Exception):
+    """Generic CLient errror."""
+
     message = "An unknown exception occurred."
 
     def __init__(self, message=None, **kwargs):
+        """Initialize the Client exception with a messsage, formatted with kwargs."""
         self.kwargs = kwargs
 
         if not message:
@@ -44,23 +47,30 @@ class ClientError(Exception):
 
 
 class AuthError(ClientError):
+    """Error when obtaining a token."""
+
     message = (
         "An exception has happened while obtaining an access token" " (err: %(err)s)"
     )
 
 
 class InvalidUsageError(ClientError):
-    message = "Invalid client usage"
+    """Invalid client usage."""
+
+    message = "Invalid client usage."
 
 
 class InvalidUrlError(ClientError):
-    message = "URL provided is not a valid orchestrator (%(url)s)"
+    """Invalid orchestrator URL."""
+
+    message = "URL provided is not a valid orchestrator (%(url)s)."
 
 
 class RetryAfterExceptionError(ClientError):
     """Base class for ClientErrors that use Retry-After header."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize error, and setup retry_after attribute."""
         try:
             self.retry_after = int(kwargs.pop("retry_after"))
         except (KeyError, ValueError):
@@ -138,7 +148,7 @@ class OverLimitError(RetryAfterExceptionError):
 
 
 class RateLimitError(RetryAfterExceptionError):
-    """HTTP 429 - Rate limit
+    """HTTP 429 - Rate limit.
 
     You've sent too many requests for this time period.
     """

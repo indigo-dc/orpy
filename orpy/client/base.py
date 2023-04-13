@@ -14,6 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+"""Module defining base object for all orchestrator resources."""
+
 import copy
 
 
@@ -21,7 +23,7 @@ class BaseObject(object):
     """Base class for all objects that represents orchestrator resoruces."""
 
     def __init__(self, info):
-        """Initalize the object.
+        """Init the object.
 
         :param dict info: A dictionary object containing the object's
                           information
@@ -31,6 +33,7 @@ class BaseObject(object):
         self.uuid = info.get("uuid", None)
 
     def __repr__(self):
+        """Return representation of object."""
         reprkeys = sorted(k for k in self.__dict__.keys() if k[0] != "_")
         info = ", ".join("%s=%s" % (k, getattr(self, k)) for k in reprkeys)
         return "<%s %s>" % (self.__class__.__name__, info)
@@ -45,12 +48,14 @@ class BaseObject(object):
                 pass
 
     def __getattr__(self, k):
+        """Get an attribute from the object."""
         if k not in self.__dict__:
             raise AttributeError(k)
         else:
             return self.__dict__[k]
 
     def __eq__(self, other):
+        """Return of this object equals to another."""
         if not isinstance(other, BaseObject):
             return NotImplemented
         # two resources of different types are not equal
@@ -61,6 +66,7 @@ class BaseObject(object):
         return self._info == other._info
 
     def __ne__(self, other):
+        """Return if this object is different from another one."""
         # Using not of '==' implementation because the not of
         # __eq__, when it returns NotImplemented, is returning False.
         return not self == other
@@ -82,6 +88,7 @@ class BaseObject(object):
         return copy.deepcopy(self._info)
 
     def get(self, k, default=None):
+        """Get an attribute from the resource."""
         try:
             return self.__getattr__(k)
         except AttributeError:

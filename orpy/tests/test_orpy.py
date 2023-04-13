@@ -12,16 +12,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-"""
-test_orpy
-----------------------------------
-
-Tests for `orpy` module.
-"""
+"""Tests for `orpy` module."""
 
 from orpy.tests import base
 
 
 class TestOrpy(base.TestCase):
+    """Base test class."""
+
     def test_something(self):
+        """Test something please."""
         pass

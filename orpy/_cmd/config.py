@@ -30,6 +30,7 @@ class OrchestratorConfigShow(show.ShowOne):
     auth_required = True
 
     def take_action(self, parsed_args):
+        """Execute command."""
         d = self.app.client.config.get(authenticated=self.auth_required).to_dict()
         for k, v in d.items():
             if isinstance(v, dict):

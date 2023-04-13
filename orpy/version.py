@@ -14,6 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+"""Module that deals with versions."""
+
 import pbr
 
 version_info = pbr.version.VersionInfo("orpy")

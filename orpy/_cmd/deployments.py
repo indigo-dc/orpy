@@ -30,6 +30,7 @@ class KeyValueAction(argparse.Action):
     """
 
     def __call__(self, parser, namespace, values, option_string=None):
+        """Call the action."""
         # Make sure we have an empty dict rather than None
         if getattr(namespace, self.dest, None) is None:
             setattr(namespace, self.dest, {})
@@ -50,6 +51,7 @@ class DeploymentList(lister.Lister):
     # TODO(aloga): implement filters
 
     def take_action(self, parsed_args):
+        """Execute command."""
         ret = self.app.client.deployments.list()
 
         columns = (
@@ -73,6 +75,7 @@ class DeploymentShow(show.ShowOne):
     """Show details about an existing deployment."""
 
     def get_parser(self, prog_name):
+        """Return parser for the command."""
         parser = super(DeploymentShow, self).get_parser(prog_name)
         parser.add_argument(
             "uuid", metavar="<deployment uuid>", help="Deployment UUID to show."
@@ -87,6 +90,7 @@ class DeploymentShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
+        """Execute command."""
         d = self.app.client.deployments.show(parsed_args.uuid).to_dict()
 
         is_table = parsed_args.formatter == "table"
@@ -117,6 +121,7 @@ class DeploymentDelete(command.Command):
     """Show details about an existing deployment."""
 
     def get_parser(self, prog_name):
+        """Return parser for the command."""
         parser = super(DeploymentDelete, self).get_parser(prog_name)
         parser.add_argument(
             "uuid", metavar="<deployment uuid>", help="Deployment UUID to delete."
@@ -124,6 +129,7 @@ class DeploymentDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
+        """Execute command."""
         self.app.client.deployments.delete(parsed_args.uuid)
 
 
@@ -131,6 +137,7 @@ class DeploymentGetTemplate(show.ShowOne):
     """Get template used for a given deployment."""
 
     def get_parser(self, prog_name):
+        """Return parser for the command."""
         parser = super(DeploymentGetTemplate, self).get_parser(prog_name)
         parser.add_argument(
             "uuid",
@@ -140,6 +147,7 @@ class DeploymentGetTemplate(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
+        """Execute command."""
         d = self.app.client.deployments.get_template(parsed_args.uuid)
         return self.dict2columns(d.to_dict())
 
@@ -148,6 +156,7 @@ class DeploymentCreate(show.ShowOne):
     """Create a deployment."""
 
     def get_parser(self, prog_name):
+        """Return parser for the command."""
         parser = super(DeploymentCreate, self).get_parser(prog_name)
 
         parser.add_argument(
@@ -189,6 +198,7 @@ class DeploymentCreate(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
+        """Execute command."""
         with open(parsed_args.filename, "r") as f:
             d = self.app.client.deployments.create(
                 template=f.read(),
@@ -204,6 +214,7 @@ class DeploymentUpdate(show.ShowOne):
     """Update an existing deployment."""
 
     def get_parser(self, prog_name):
+        """Return parser for the command."""
         parser = super(DeploymentUpdate, self).get_parser(prog_name)
 
         parser.add_argument(
@@ -246,6 +257,7 @@ class DeploymentUpdate(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
+        """Execute command."""
         with open(parsed_args.filename, "r") as f:
             d = self.app.client.deployments.update(
                 uuid=parsed_args.uuid,

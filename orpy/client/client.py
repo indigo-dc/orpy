@@ -14,6 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+"""INDIGO-DataCloud PaaS orchestrator client module."""
+
 import copy
 import datetime
 import hashlib
@@ -45,44 +47,48 @@ class _JSONEncoder(json.JSONEncoder):
 
 
 class OrpyClient(object):
-    """An INDIGO-DataCloud PaaS orchestrator client class."""
+    """An INDIGO-DataCloud PaaS orchestrator client class.
+
+    If you want an authenticated client, when creating the object you MUST pass either:
+        - An orpy.oidc.OpenIDConnectAgent object (oidc_agent parameter)
+        - An orpy.oidc.OpenIDConnectSession object (oidc_session parameter)
+        - An access token for authentication (token parameter)
+
+    The first method is the preferred, you can create an object this way (assuming that
+    the oidc-agent account is named "oidc-agent-account":
+
+        from orpy import oidc
+        from orpy.client import client
+        oidc_agent = oidc.OpenIDConnectAgent("oidc-agent-account")
+
+        cli = client.OrpyClient(url, oidc_agent=oidc_agent)
+
+    The second method is only useful when you are programming a library and have access
+    to a requests.Request like object session, like the ones used by Flask Dance:
+
+        from orpy import oidc
+        from orpy.client import client
+        oidc_session = oidc.OpenIDConnectSession(flask_blueprint.session)
+
+        cli = client.OrpyClient(url oidc_session=oidc_session)
+
+    Note that passing more than one of the above methods will result in a warning, not
+    an error. In that case, the preference is the following (note also that if one
+    method fails we will not continue to the next one, so the rest of the methods are
+    actually ignored):
+
+        - oidc_agent
+        - oidc_session
+        - token
+
+    If you do not pass any of these when creating the client, but you want
+    to setup them afterwards, you can do so with the set_authentication method.
+    """
 
     def __init__(
         self, url, oidc_agent=None, token=None, oidc_session=None, debug=False
     ):
-        """Initialization of OrpyClient object.
-
-        You MUST pass either:
-            - An orpy.oidc.OpenIDConnectAgent object (oidc_agent parameter)
-            - An orpy.oidc.OpenIDConnectSession object (oidc_session parameter)
-            - An access token for authentication (token parameter)
-
-        The first method is the preferred, you can create an object this way
-        (assuming that the oidc-agent account is named "oidc-agent-account":
-
-            from orpy import oidc
-            from orpy.client import client
-            oidc_agent = oidc.OpenIDConnectAgent("oidc-agent-account")
-
-            cli = client.OrpyClient(url, oidc_agent=oidc_agent)
-
-        The second method is only useful when you are programming a library
-        and have access to a requests.Request like object session, like the
-        ones used by Flask Dance:
-
-            from orpy import oidc
-            from orpy.client import client
-            oidc_session = oidc.OpenIDConnectSession(flask_blueprint.session)
-
-            cli = client.OrpyClient(url oidc_session=oidc_session)
-
-        Note that passing more than one of the above methods will result in a
-        warning, not an error. In that case, the preference is the following
-        (note also that if one method fails we will not continue to the next
-        one, so the rest of the methods are actually ignored):
-            - oidc_agent
-            - oidc_session
-            - token
+        """Initialize of OrpyClient object.
 
         :param str url: Orchestrator URL
         :param orpy.oidc.OpenIDConnectAgent oidc_agent: OpenID Connect agent
@@ -124,6 +130,16 @@ class OrpyClient(object):
         self.session = requests.Session()
 
     def set_authentication(self, token=None, agent=None, session=None):
+        """Set OIDC authentication options.
+
+        :param orpy.oidc.OpenIDConnectAgent oidc_agent: OpenID Connect agent
+                                                        object to use for
+                                                        fetching access tokens.
+        :param orpy.oidc.OpenIDConnectSession oidc_session: OpenID Connect
+                                                            session to use for
+                                                            fetching the token.
+        :param str token: OpenID Connect access token to use for auth.
+        """
         self._token = token
         self.oidc_agent = agent
         self.oidc_session = session
@@ -152,6 +168,7 @@ class OrpyClient(object):
 
     @property
     def token(self):
+        """Get an access token to interact with the Orchestrator."""
         self._check_auth()
 
         token = self._token
@@ -224,7 +241,6 @@ class OrpyClient(object):
 
         :returns: The response to the request.
         """
-
         method = method.lower()
 
         kwargs.setdefault("headers", kwargs.get("headers", {}))
@@ -241,11 +257,11 @@ class OrpyClient(object):
 
         url = parse.urljoin(self.url, url)
 
-        self.http_log_req(method, url, kwargs)
+        self._http_log_req(method, url, kwargs)
 
         resp = self.session.request(method, url, **kwargs)
 
-        self.http_log_resp(resp)
+        self._http_log_resp(resp)
 
         if resp.status_code >= 400:
             try:
@@ -268,7 +284,7 @@ class OrpyClient(object):
             # If we have curr, next and last this means that we are paginating
             # therefore we need to append to the "contents"
             if all([curr, next_, last]) and curr != last:
-                self.http_log_req(method, next_, kwargs)
+                self._http_log_req(method, next_, kwargs)
                 resp = self.session.request(method, next_, **kwargs)
                 self.http_log_resp(resp)
                 next_content = resp.json().get("content", [])
@@ -284,7 +300,8 @@ class OrpyClient(object):
             d[link["rel"]] = link["href"]
         return d.get("self"), d.get("next"), d.get("last")
 
-    def http_log_req(self, method, url, kwargs):
+    def _http_log_req(self, method, url, kwargs):
+        """Log a HTTP request."""
         if not self.http_debug:
             return
 
@@ -310,7 +327,8 @@ class OrpyClient(object):
             string_parts.append(" -d '%s'" % json.dumps(data))
         self._logger.debug("REQ: %s" % "".join(string_parts))
 
-    def http_log_resp(self, resp):
+    def _http_log_resp(self, resp):
+        """Log a HTTP response."""
         if not self.http_debug:
             return
 
@@ -349,7 +367,6 @@ class OrpyClient(object):
                             default text will be sha1 hash of the value being
                             redacted
         """
-
         key = path.pop()
 
         # move to the most nested dict

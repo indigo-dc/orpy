@@ -14,13 +14,15 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+"""Miscelaneous utilities."""
+
 import os
 
 import six
 
 
 def env(*vars, **kwargs):
-    """Search for the first defined of possibly many env vars
+    """Search for the first defined of possibly many env vars.
 
     Returns the first environment variable defined in vars, or
     returns the default defined in kwargs.
@@ -59,16 +61,19 @@ def get_item_properties(item, fields, mixed_case_fields=None):
 
 
 def format_list_of_dicts(data, sep="\n"):
+    """Format a list of dicts into a string.
+
+    :param sep: Separator to join the different dicts on.
+    """
     return sep.join([format_dict(d) for d in data])
 
 
 def format_dict(data):
-    """Return a formatted string of key value pairs
+    """Return a formatted string of key value pairs.
 
     :param data: a dict
     :rtype: a string formatted to key='value'
     """
-
     if data is None:
         return None
 

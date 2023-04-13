@@ -14,6 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+"""This module contains the client dealing with PaaS Orchestrator deployments."""
+
 from orpy.client import base
 
 
@@ -21,6 +23,10 @@ class Deployments(object):
     """Manage Orchestrator deployments."""
 
     def __init__(self, client):
+        """Initialize client.
+
+        :params client: An instance of OrpyClient.
+        """
         self.client = client
 
     def list(self, **kwargs):
