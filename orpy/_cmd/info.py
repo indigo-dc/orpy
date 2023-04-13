@@ -30,6 +30,7 @@ class OrchestratorEndpointInfo(show.ShowOne):
     auth_required = False
 
     def take_action(self, parsed_args):
+        """Execute command."""
         d = self.app.client.info.get(authenticated=self.auth_required).to_dict()
         for k, v in d.items():
             if isinstance(v, dict):

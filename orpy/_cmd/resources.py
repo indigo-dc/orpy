@@ -24,6 +24,7 @@ class ResourcesList(lister.Lister):
     """List Resources for a given deployment."""
 
     def get_parser(self, prog_name):
+        """Return parser for the command."""
         parser = super(ResourcesList, self).get_parser(prog_name)
         parser.add_argument(
             "uuid", metavar="<deployment uuid>", help="Deployment UUID to show."
@@ -31,6 +32,7 @@ class ResourcesList(lister.Lister):
         return parser
 
     def take_action(self, parsed_args):
+        """Execute command."""
         ret = self.app.client.resources.list(parsed_args.uuid)
 
         columns = (
@@ -54,6 +56,7 @@ class ResourcesShow(show.ShowOne):
     """Show details about a resource for a given deployment."""
 
     def get_parser(self, prog_name):
+        """Return parser for the command."""
         parser = super(ResourcesShow, self).get_parser(prog_name)
         parser.add_argument(
             "deployment_uuid",
@@ -67,6 +70,7 @@ class ResourcesShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
+        """Execute command."""
         d = self.app.client.resources.show(
             parsed_args.deployment_uuid, parsed_args.resource_uuid
         ).to_dict()

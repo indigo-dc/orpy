@@ -14,6 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+"""A module to interact with an OIDC agent."""
+
 import json
 import socket
 
@@ -95,7 +97,6 @@ class OpenIDConnectSession(object):
         :param session: A request.Session subclass object, containing a "token"
                         attribute where we will obtain the access token.
         """
-
         if not (getattr(session, "token", None) and isinstance(session.token, dict)):
             raise exceptions.InvalidUsageError("Session object is not valid")
         self._session = session

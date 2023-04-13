@@ -14,6 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+"""This module contains the client dealing with PaaS Orchestrator information."""
+
 from orpy.client import base
 from orpy import exceptions
 
@@ -22,6 +24,10 @@ class Info(object):
     """Get information about the Orchestrator."""
 
     def __init__(self, client):
+        """Initialize client.
+
+        :params client: An instance of OrpyClient.
+        """
         self.client = client
 
     def get(self, **kwargs):

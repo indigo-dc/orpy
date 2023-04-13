@@ -15,6 +15,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+"""Module that implements the CLI."""
+
 import argparse
 import sys
 
@@ -41,7 +43,7 @@ class OrpyApp(app.App):
     commands = []
 
     def __init__(self):
-
+        """Initialize the OrpyApp and setup the CLI."""
         self.client = None
         self.token = None
         self.oidc_agent = None
@@ -62,10 +64,12 @@ class OrpyApp(app.App):
         )
 
     def initialize_app(self, argv):
+        """Initialize the Cliff application."""
         for cmd in self.commands:
             self.command_manager.add_command(cmd.__name__.lower(), cmd)
 
     def prepare_to_run_command(self, cmd):
+        """Do preliminary stuff to run the command."""
         if isinstance(cmd, help.HelpCommand):
             return
 
@@ -107,6 +111,7 @@ class OrpyApp(app.App):
             )
 
     def build_option_parser(self, description, version):
+        """Generate and populate the option parser."""
         auth_help = """Authentication:
 
     In order to interact with the INDIGO PaaS Orchestrator we need to use an
@@ -175,6 +180,7 @@ class OrpyApp(app.App):
 
 
 def main(argv=sys.argv[1:]):
+    """Execute the main program."""
     orpy = OrpyApp()
     return orpy.run(argv)
 
