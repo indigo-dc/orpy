@@ -35,4 +35,3 @@ class OrchestratorConfigShow(show.ShowOne):
             if isinstance(v, dict):
                 d[k] = utils.format_dict(v)
         return self.dict2columns(d)
-
