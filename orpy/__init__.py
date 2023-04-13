@@ -13,8 +13,3 @@
 # under the License.
 
 """orpy is an INDIGO-PaaS orchestrator client."""
-
-import pbr.version
-
-
-__version__ = pbr.version.VersionInfo("orpy").version_string()

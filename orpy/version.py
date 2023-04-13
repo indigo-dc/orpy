@@ -16,7 +16,7 @@
 
 """Module that deals with versions."""
 
-import pbr
+import pbr.version
 
 version_info = pbr.version.VersionInfo("orpy")
 try:
